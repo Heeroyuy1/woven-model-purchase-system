@@ -1,4 +1,14 @@
 {
   "project": "celebrated-courage",
-  "environment": "production"
+  "environment": "production",
+  "service": "woven-model-purchase-system",
+  "build": {
+    "builder": "NIXPACKS",
+    "buildCommand": "npm install && npx prisma generate"
+  },
+  "deploy": {
+    "startCommand": "npx prisma generate && npx prisma db push && npx tsx src/index.ts",
+    "healthcheckPath": "/api/health",
+    "restartPolicyType": "ON_FAILURE"
+  }
 }
