@@ -66,8 +66,8 @@ app.use('/api/coupons', couponRoutes);
 app.use(errorHandler);
 
 // Start server
-app.listen(env.PORT, () => {
-  console.log(`[PurchaseSystem] Server running on port ${env.PORT}`);
+app.listen(env.PORT, '0.0.0.0', () => {
+  console.log(`[PurchaseSystem] Server running on 0.0.0.0:${env.PORT}`);
   console.log(`[PurchaseSystem] Licensing API: ${env.LICENSING_API_URL}`);
   console.log(`[PurchaseSystem] Frontend: ${env.FRONTEND_URL}`);
   console.log(`[PurchaseSystem] Environment: ${process.env.NODE_ENV || 'development'}`);
