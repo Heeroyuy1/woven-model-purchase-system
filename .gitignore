@@ -1,0 +1,20 @@
+node_modules/
+dist/
+.env
+*.db
+*.db.backup
+*.bak
+*.log
+
+# OS files
+Thumbs.db
+.DS_Store
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# temp
+/tmp/

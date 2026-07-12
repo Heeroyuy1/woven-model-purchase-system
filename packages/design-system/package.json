@@ -1,0 +1,12 @@
+{
+  "name": "@woven-model/design-system",
+  "version": "1.0.0",
+  "private": true,
+  "main": "tokens/index.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.0"
+  }
+}

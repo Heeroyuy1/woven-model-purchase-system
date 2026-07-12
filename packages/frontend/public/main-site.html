@@ -1,0 +1,4946 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="description" content="Woven Model — Technology consulting by Jude Yearwood. AI solutions, custom software development, business automation, cybersecurity reviews, and enterprise technology consulting.">
+
+    <meta name="keywords" content="technology consulting, AI solutions, custom software, business automation, cybersecurity, enterprise consulting, Azure, Microsoft 365, Jude Yearwood, Woven Model">
+
+    <meta name="author" content="Jude Yearwood">
+
+    <meta name="robots" content="index, follow">
+
+    <meta property="og:title" content="Woven Model — Building Intelligent Systems That Scale">
+
+    <meta property="og:description" content="AI • Automation • Enterprise Software • Security. Technology consulting by Jude Yearwood.">
+
+    <meta property="og:type" content="website">
+
+    <meta property="og:url" content="https://wovenmodel.com">
+
+    <meta property="og:image" content="https://wovenmodel.com/assets/og-image.png">
+
+    <meta name="twitter:card" content="summary_large_image">
+
+    <meta name="twitter:title" content="Woven Model — Building Intelligent Systems That Scale">
+
+    <meta name="twitter:description" content="AI • Automation • Enterprise Software • Security. Technology consulting by Jude Yearwood.">
+
+    <link rel="canonical" href="https://wovenmodel.com">
+
+    <link rel="icon" type="image/svg+xml" href="favicon.ico">
+
+    <title>Woven Model | Technology Consulting — AI, Automation, Enterprise Software & Security</title>
+
+
+
+    <style>
+
+        /* ============================================
+
+           CSS CUSTOM PROPERTIES
+
+           ============================================ */
+
+        :root {
+
+            --color-navy-950: #0a0f1e;
+
+            --color-navy-900: #0d1428;
+
+            --color-navy-800: #111b36;
+
+            --color-navy-700: #162244;
+
+            --color-navy-600: #1c2d56;
+
+            --color-navy-500: #243a6b;
+
+            --color-cyan-400: #22d3ee;
+
+            --color-cyan-500: #06b6d4;
+
+            --color-cyan-600: #0891b2;
+
+            --color-cyan-700: #0e7490;
+
+            --color-white: #ffffff;
+
+            --color-gray-100: #f3f4f6;
+
+            --color-gray-200: #e5e7eb;
+
+            --color-gray-300: #d1d5db;
+
+            --color-gray-400: #9ca3af;
+
+            --color-gray-500: #6b7280;
+
+            --color-gray-600: #4b5563;
+
+            --color-gray-700: #374151;
+
+            --color-gray-800: #1f2937;
+
+            --color-gray-900: #111827;
+
+            --glass-bg: rgba(17, 27, 54, 0.6);
+
+            --glass-border: rgba(34, 211, 238, 0.15);
+
+            --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+
+            --glass-blur: blur(16px);
+
+            --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+            --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+            --transition-fast: 150ms ease;
+
+            --transition-normal: 300ms ease;
+
+            --transition-slow: 500ms ease;
+
+            --radius-sm: 6px;
+
+            --radius-md: 10px;
+
+            --radius-lg: 16px;
+
+            --radius-xl: 20px;
+
+            --max-width: 1200px;
+
+            --nav-height: 72px;
+
+        }
+
+
+
+        /* ============================================
+
+           RESET & BASE
+
+           ============================================ */
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        html { scroll-behavior: smooth; scroll-padding-top: var(--nav-height); }
+
+        body {
+
+            font-family: var(--font-sans);
+
+            background-color: var(--color-navy-950);
+
+            color: var(--color-gray-200);
+
+            line-height: 1.7;
+
+            overflow-x: hidden;
+
+            -webkit-font-smoothing: antialiased;
+
+            -moz-osx-font-smoothing: grayscale;
+
+        }
+
+        img { max-width: 100%; height: auto; display: block; }
+
+        a { color: var(--color-cyan-400); text-decoration: none; transition: color var(--transition-fast); }
+
+        a:hover { color: var(--color-cyan-500); }
+
+        ul { list-style: none; }
+
+        h1, h2, h3, h4, h5, h6 { line-height: 1.25; color: var(--color-white); }
+
+        h1 { font-size: clamp(2.4rem, 5vw, 3.8rem); font-weight: 800; letter-spacing: -0.03em; }
+
+        h2 { font-size: clamp(1.8rem, 3.5vw, 2.6rem); font-weight: 700; letter-spacing: -0.02em; }
+
+        h3 { font-size: clamp(1.2rem, 2vw, 1.5rem); font-weight: 600; }
+
+        p { margin-bottom: 1rem; }
+
+        .section-label {
+
+            display: inline-block;
+
+            font-family: var(--font-mono);
+
+            font-size: 0.8rem;
+
+            font-weight: 600;
+
+            text-transform: uppercase;
+
+            letter-spacing: 0.15em;
+
+            color: var(--color-cyan-400);
+
+            margin-bottom: 0.75rem;
+
+        }
+
+        .section-title {
+
+            margin-bottom: 0.75rem;
+
+        }
+
+        .section-subtitle {
+
+            color: var(--color-gray-400);
+
+            font-size: 1.1rem;
+
+            max-width: 600px;
+
+        }
+
+
+
+        /* ============================================
+
+           NAVIGATION
+
+           ============================================ */
+
+        .nav {
+
+            position: fixed;
+
+            top: 0;
+
+            left: 0;
+
+            width: 100%;
+
+            z-index: 1000;
+
+            height: var(--nav-height);
+
+            transition: background var(--transition-normal), box-shadow var(--transition-normal);
+
+        }
+
+        .nav.scrolled {
+
+            background: rgba(10, 15, 30, 0.85);
+
+            backdrop-filter: blur(20px);
+
+            -webkit-backdrop-filter: blur(20px);
+
+            box-shadow: 0 1px 0 var(--glass-border), 0 4px 20px rgba(0,0,0,0.3);
+
+        }
+
+        .nav-inner {
+
+            max-width: var(--max-width);
+
+            margin: 0 auto;
+
+            padding: 0 1.5rem;
+
+            height: 100%;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+        }
+
+        .nav-logo {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 0.6rem;
+
+            font-weight: 700;
+
+            font-size: 1.25rem;
+
+            color: var(--color-white);
+
+            letter-spacing: -0.02em;
+
+        }
+
+        .nav-logo-icon {
+
+            width: 36px;
+
+            height: 36px;
+
+            background: linear-gradient(135deg, var(--color-cyan-400), var(--color-cyan-600));
+
+            border-radius: 8px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-size: 1.1rem;
+
+            color: var(--color-navy-950);
+
+            flex-shrink: 0;
+
+        }
+
+        .nav-links {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 2rem;
+
+        }
+
+        .nav-links a {
+
+            color: var(--color-gray-300);
+
+            font-size: 0.9rem;
+
+            font-weight: 500;
+
+            transition: color var(--transition-fast);
+
+            position: relative;
+
+        }
+
+        .nav-links a::after {
+
+            content: '';
+
+            position: absolute;
+
+            bottom: -4px;
+
+            left: 0;
+
+            width: 0;
+
+            height: 2px;
+
+            background: var(--color-cyan-400);
+
+            transition: width var(--transition-normal);
+
+        }
+
+        .nav-links a:hover { color: var(--color-white); }
+
+        .nav-links a:hover::after { width: 100%; }
+
+        .nav-cta {
+
+            background: linear-gradient(135deg, var(--color-cyan-500), var(--color-cyan-600));
+
+            color: var(--color-navy-950) !important;
+
+            padding: 0.55rem 1.3rem;
+
+            border-radius: 8px;
+
+            font-weight: 600 !important;
+
+            transition: transform var(--transition-fast), box-shadow var(--transition-fast) !important;
+
+        }
+
+        .nav-cta:hover {
+
+            transform: translateY(-1px);
+
+            box-shadow: 0 4px 16px rgba(6, 182, 212, 0.35);
+
+        }
+
+        .nav-cta::after { display: none !important; }
+
+        .nav-toggle {
+
+            display: none;
+
+            background: none;
+
+            border: none;
+
+            cursor: pointer;
+
+            padding: 0.5rem;
+
+            color: var(--color-white);
+
+            z-index: 1001;
+
+        }
+
+        .nav-toggle span {
+
+            display: block;
+
+            width: 24px;
+
+            height: 2px;
+
+            background: var(--color-white);
+
+            margin: 5px 0;
+
+            transition: all var(--transition-normal);
+
+            border-radius: 2px;
+
+        }
+
+        .nav-toggle.active span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+
+        .nav-toggle.active span:nth-child(2) { opacity: 0; }
+
+        .nav-toggle.active span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
+
+
+
+        @media (max-width: 900px) {
+
+            .nav-toggle { display: block; }
+
+            .nav-links {
+
+                position: fixed;
+
+                top: 0;
+
+                right: -100%;
+
+                width: 280px;
+
+                height: 100vh;
+
+                flex-direction: column;
+
+                background: rgba(13, 20, 40, 0.97);
+
+                backdrop-filter: blur(20px);
+
+                -webkit-backdrop-filter: blur(20px);
+
+                padding: 6rem 2rem 2rem;
+
+                transition: right var(--transition-normal);
+
+                gap: 1.5rem;
+
+                border-left: 1px solid var(--glass-border);
+
+            }
+
+            .nav-links.active { right: 0; }
+
+            .nav-links a { font-size: 1rem; }
+
+        }
+
+
+
+        /* ============================================
+
+           HERO SECTION
+
+           ============================================ */
+
+        .hero {
+
+            min-height: 100vh;
+
+            display: flex;
+
+            align-items: center;
+
+            padding: calc(var(--nav-height) + 2rem) 1.5rem 4rem;
+
+            position: relative;
+
+            overflow: hidden;
+
+        }
+
+        .hero::before {
+
+            content: '';
+
+            position: absolute;
+
+            top: -40%;
+
+            right: -20%;
+
+            width: 70vw;
+
+            height: 70vw;
+
+            max-width: 900px;
+
+            max-height: 900px;
+
+            background: radial-gradient(circle, rgba(6, 182, 212, 0.08) 0%, transparent 70%);
+
+            border-radius: 50%;
+
+            pointer-events: none;
+
+        }
+
+        .hero::after {
+
+            content: '';
+
+            position: absolute;
+
+            bottom: -20%;
+
+            left: -10%;
+
+            width: 50vw;
+
+            height: 50vw;
+
+            max-width: 600px;
+
+            max-height: 600px;
+
+            background: radial-gradient(circle, rgba(34, 211, 238, 0.05) 0%, transparent 70%);
+
+            border-radius: 50%;
+
+            pointer-events: none;
+
+        }
+
+        .hero-grid {
+
+            display: grid;
+
+            grid-template-columns: 1fr 1fr;
+
+            gap: 3rem;
+
+            align-items: center;
+
+            max-width: var(--max-width);
+
+            margin: 0 auto;
+
+            width: 100%;
+
+            position: relative;
+
+            z-index: 1;
+
+        }
+
+        .hero-content { max-width: 600px; }
+
+        .hero-badge {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            gap: 0.5rem;
+
+            background: rgba(6, 182, 212, 0.1);
+
+            border: 1px solid var(--glass-border);
+
+            border-radius: 50px;
+
+            padding: 0.4rem 1rem;
+
+            font-size: 0.85rem;
+
+            font-weight: 500;
+
+            color: var(--color-cyan-400);
+
+            margin-bottom: 1.5rem;
+
+        }
+
+        .hero-badge-dot {
+
+            width: 8px;
+
+            height: 8px;
+
+            background: var(--color-cyan-400);
+
+            border-radius: 50%;
+
+            animation: pulse-dot 2s ease-in-out infinite;
+
+        }
+
+        @keyframes pulse-dot {
+
+            0%, 100% { opacity: 1; transform: scale(1); }
+
+            50% { opacity: 0.5; transform: scale(1.3); }
+
+        }
+
+        .hero-name {
+
+            font-size: clamp(2.8rem, 6vw, 4.5rem);
+
+            font-weight: 800;
+
+            letter-spacing: -0.04em;
+
+            margin-bottom: 0.25rem;
+
+            line-height: 1.1;
+
+        }
+
+        .hero-name span {
+
+            background: linear-gradient(135deg, var(--color-cyan-400), #38bdf8);
+
+            -webkit-background-clip: text;
+
+            -webkit-text-fill-color: transparent;
+
+            background-clip: text;
+
+        }
+
+        .hero-role {
+
+            font-size: 1.1rem;
+
+            color: var(--color-gray-400);
+
+            margin-bottom: 1.5rem;
+
+            font-weight: 400;
+
+        }
+
+        .hero-statement {
+
+            font-size: 1.15rem;
+
+            color: var(--color-gray-300);
+
+            line-height: 1.6;
+
+            margin-bottom: 2rem;
+
+            max-width: 520px;
+
+        }
+
+        .hero-buttons {
+
+            display: flex;
+
+            flex-wrap: wrap;
+
+            gap: 1rem;
+
+            margin-bottom: 2rem;
+
+        }
+
+        .btn {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            gap: 0.5rem;
+
+            padding: 0.8rem 1.8rem;
+
+            border-radius: 10px;
+
+            font-weight: 600;
+
+            font-size: 0.95rem;
+
+            cursor: pointer;
+
+            border: none;
+
+            transition: all var(--transition-fast);
+
+            text-decoration: none;
+
+            font-family: var(--font-sans);
+
+        }
+
+        .btn-primary {
+
+            background: linear-gradient(135deg, var(--color-cyan-500), var(--color-cyan-600));
+
+            color: var(--color-navy-950);
+
+            box-shadow: 0 4px 20px rgba(6, 182, 212, 0.25);
+
+        }
+
+        .btn-primary:hover {
+
+            transform: translateY(-2px);
+
+            box-shadow: 0 6px 28px rgba(6, 182, 212, 0.4);
+
+            color: var(--color-navy-950);
+
+        }
+
+        .btn-secondary {
+
+            background: transparent;
+
+            color: var(--color-white);
+
+            border: 1px solid var(--color-gray-600);
+
+        }
+
+        .btn-secondary:hover {
+
+            border-color: var(--color-cyan-400);
+
+            color: var(--color-cyan-400);
+
+            transform: translateY(-2px);
+
+        }
+
+        .hero-trust {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 0.75rem;
+
+            padding-top: 1rem;
+
+            border-top: 1px solid var(--glass-border);
+
+        }
+
+        .hero-trust-icon {
+
+            width: 40px;
+
+            height: 40px;
+
+            background: rgba(34, 211, 238, 0.1);
+
+            border-radius: 10px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-size: 1.2rem;
+
+            flex-shrink: 0;
+
+        }
+
+        .hero-trust-text {
+
+            font-size: 0.9rem;
+
+            color: var(--color-gray-400);
+
+            font-weight: 500;
+
+        }
+
+        .hero-visual {
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            position: relative;
+
+        }
+
+        .hero-photo-wrapper {
+
+            position: relative;
+
+            width: 320px;
+
+            height: 320px;
+
+        }
+
+        .hero-photo-bg {
+
+            position: absolute;
+
+            inset: -8px;
+
+            background: linear-gradient(135deg, var(--color-cyan-400), var(--color-cyan-600), #0ea5e9);
+
+            border-radius: 24px;
+
+            opacity: 0.3;
+
+            filter: blur(20px);
+
+        }
+
+        .hero-photo {
+
+            width: 100%;
+
+            height: 100%;
+
+            border-radius: 20px;
+
+            background: var(--color-navy-700);
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            position: relative;
+
+            overflow: hidden;
+
+            border: 2px solid var(--glass-border);
+
+        }
+
+        .hero-photo-placeholder {
+
+            font-size: 5rem;
+
+            color: var(--color-gray-500);
+
+            font-weight: 300;
+
+        }
+
+        .hero-floating-card {
+
+            position: absolute;
+
+            background: var(--glass-bg);
+
+            backdrop-filter: var(--glass-blur);
+
+            -webkit-backdrop-filter: var(--glass-blur);
+
+            border: 1px solid var(--glass-border);
+
+            border-radius: var(--radius-lg);
+
+            padding: 1rem 1.2rem;
+
+            box-shadow: var(--glass-shadow);
+
+        }
+
+        .hero-floating-card.top-right {
+
+            top: -10px;
+
+            right: -20px;
+
+        }
+
+        .hero-floating-card.bottom-left {
+
+            bottom: -15px;
+
+            left: -25px;
+
+        }
+
+        .hero-floating-card .fc-label {
+
+            font-size: 0.75rem;
+
+            color: var(--color-gray-400);
+
+            text-transform: uppercase;
+
+            letter-spacing: 0.05em;
+
+        }
+
+        .hero-floating-card .fc-value {
+
+            font-weight: 700;
+
+            color: var(--color-white);
+
+            font-size: 1.1rem;
+
+        }
+
+
+
+        @media (max-width: 900px) {
+
+            .hero-grid { grid-template-columns: 1fr; text-align: center; }
+
+            .hero-content { max-width: 100%; display: flex; flex-direction: column; align-items: center; }
+
+            .hero-statement { max-width: 100%; }
+
+            .hero-buttons { justify-content: center; }
+
+            .hero-trust { justify-content: center; }
+
+            .hero-visual { order: -1; }
+
+            .hero-photo-wrapper { width: 220px; height: 220px; }
+
+        }
+
+
+
+        /* ============================================
+
+           SECTION COMMONS
+
+           ============================================ */
+
+        .section {
+
+            padding: 6rem 1.5rem;
+
+            position: relative;
+
+        }
+
+        .section-inner {
+
+            max-width: var(--max-width);
+
+            margin: 0 auto;
+
+        }
+
+        .section-header {
+
+            text-align: center;
+
+            margin-bottom: 3.5rem;
+
+        }
+
+        .section-header .section-subtitle { margin: 0 auto; }
+
+
+
+        /* ============================================
+
+           ABOUT SECTION
+
+           ============================================ */
+
+        .about-grid {
+
+            display: grid;
+
+            grid-template-columns: 1fr 1fr;
+
+            gap: 3rem;
+
+            align-items: center;
+
+        }
+
+        .about-content p {
+
+            color: var(--color-gray-300);
+
+            line-height: 1.75;
+
+        }
+
+        .about-expertise { margin-top: 2rem; }
+
+        .about-expertise h4 {
+
+            font-size: 0.85rem;
+
+            text-transform: uppercase;
+
+            letter-spacing: 0.1em;
+
+            color: var(--color-cyan-400);
+
+            margin-bottom: 1rem;
+
+        }
+
+        .expertise-tags {
+
+            display: flex;
+
+            flex-wrap: wrap;
+
+            gap: 0.6rem;
+
+        }
+
+        .expertise-tag {
+
+            background: rgba(34, 211, 238, 0.08);
+
+            border: 1px solid var(--glass-border);
+
+            padding: 0.45rem 0.9rem;
+
+            border-radius: 6px;
+
+            font-size: 0.82rem;
+
+            color: var(--color-gray-200);
+
+            font-weight: 500;
+
+            transition: all var(--transition-fast);
+
+        }
+
+        .expertise-tag:hover {
+
+            background: rgba(34, 211, 238, 0.15);
+
+            border-color: var(--color-cyan-500);
+
+        }
+
+        .about-visual {
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+        }
+
+        .about-card {
+
+            background: var(--glass-bg);
+
+            backdrop-filter: var(--glass-blur);
+
+            -webkit-backdrop-filter: var(--glass-blur);
+
+            border: 1px solid var(--glass-border);
+
+            border-radius: var(--radius-xl);
+
+            padding: 2.5rem;
+
+            box-shadow: var(--glass-shadow);
+
+            text-align: center;
+
+        }
+
+        .about-card-icon {
+
+            width: 64px;
+
+            height: 64px;
+
+            background: rgba(34, 211, 238, 0.1);
+
+            border-radius: 16px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-size: 1.8rem;
+
+            margin: 0 auto 1.5rem;
+
+        }
+
+        .about-card h3 { margin-bottom: 0.5rem; }
+
+        .about-stats {
+
+            display: grid;
+
+            grid-template-columns: 1fr 1fr;
+
+            gap: 1rem;
+
+            margin-top: 1.5rem;
+
+        }
+
+        .about-stat {
+
+            background: rgba(255,255,255,0.03);
+
+            border-radius: var(--radius-md);
+
+            padding: 1rem;
+
+        }
+
+        .about-stat-value {
+
+            font-size: 1.6rem;
+
+            font-weight: 800;
+
+            color: var(--color-cyan-400);
+
+        }
+
+        .about-stat-label {
+
+            font-size: 0.78rem;
+
+            color: var(--color-gray-500);
+
+            margin-top: 0.2rem;
+
+        }
+
+
+
+        @media (max-width: 768px) {
+
+            .about-grid { grid-template-columns: 1fr; }
+
+            .about-card { order: -1; }
+
+        }
+
+
+
+        /* ============================================
+
+           SERVICES SECTION
+
+           ============================================ */
+
+        .services-grid {
+
+            display: grid;
+
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+
+            gap: 1.5rem;
+
+        }
+
+        .service-card {
+
+            background: var(--glass-bg);
+
+            backdrop-filter: var(--glass-blur);
+
+            -webkit-backdrop-filter: var(--glass-blur);
+
+            border: 1px solid var(--glass-border);
+
+            border-radius: var(--radius-lg);
+
+            padding: 2rem;
+
+            transition: all var(--transition-normal);
+
+            position: relative;
+
+            overflow: hidden;
+
+        }
+
+        .service-card::before {
+
+            content: '';
+
+            position: absolute;
+
+            top: 0;
+
+            left: 0;
+
+            width: 100%;
+
+            height: 3px;
+
+            background: linear-gradient(90deg, var(--color-cyan-500), transparent);
+
+            opacity: 0;
+
+            transition: opacity var(--transition-normal);
+
+        }
+
+        .service-card:hover {
+
+            transform: translateY(-4px);
+
+            box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+
+            border-color: rgba(34, 211, 238, 0.3);
+
+        }
+
+        .service-card:hover::before { opacity: 1; }
+
+        .service-icon {
+
+            width: 50px;
+
+            height: 50px;
+
+            background: rgba(34, 211, 238, 0.1);
+
+            border-radius: var(--radius-md);
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-size: 1.4rem;
+
+            margin-bottom: 1.2rem;
+
+        }
+
+        .service-card h3 { margin-bottom: 0.5rem; }
+
+        .service-card p { color: var(--color-gray-400); font-size: 0.9rem; margin-bottom: 1.2rem; }
+
+        .service-features {
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 0.5rem;
+
+        }
+
+        .service-feature {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 0.6rem;
+
+            font-size: 0.85rem;
+
+            color: var(--color-gray-300);
+
+        }
+
+        .service-feature-icon {
+
+            color: var(--color-cyan-400);
+
+            flex-shrink: 0;
+
+            font-size: 0.7rem;
+
+        }
+
+
+
+        /* ============================================
+
+           PRODUCTS SECTION
+
+           ============================================ */
+
+        .product-card {
+
+            background: var(--glass-bg);
+
+            backdrop-filter: var(--glass-blur);
+
+            -webkit-backdrop-filter: var(--glass-blur);
+
+            border: 1px solid var(--glass-border);
+
+            border-radius: var(--radius-xl);
+
+            overflow: hidden;
+
+            transition: all var(--transition-normal);
+
+            display: grid;
+
+            grid-template-columns: 1fr 1fr;
+
+            gap: 0;
+
+        }
+
+        .product-card:hover {
+
+            box-shadow: 0 16px 48px rgba(0,0,0,0.5);
+
+            border-color: rgba(34, 211, 238, 0.3);
+
+        }
+
+        .product-visual {
+
+            background: linear-gradient(135deg, var(--color-navy-700), var(--color-navy-600));
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            padding: 2rem;
+
+            min-height: 320px;
+
+            position: relative;
+
+            overflow: hidden;
+
+        }
+
+        .product-visual::before {
+
+            content: '';
+
+            position: absolute;
+
+            inset: 0;
+
+            background: radial-gradient(circle at 30% 50%, rgba(6, 182, 212, 0.06), transparent 60%);
+
+            pointer-events: none;
+
+        }
+
+        .product-screenshot {
+
+            width: 100%;
+
+            max-width: 420px;
+
+            border-radius: var(--radius-md);
+
+            border: 2px solid var(--glass-border);
+
+            background: var(--color-navy-800);
+
+            overflow: hidden;
+
+            position: relative;
+
+            z-index: 1;
+
+            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+
+        }
+
+        .product-screenshot-header {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 6px;
+
+            padding: 8px 12px;
+
+            background: var(--color-navy-900);
+
+            border-bottom: 1px solid var(--glass-border);
+
+        }
+
+        .product-screenshot-dot {
+
+            width: 10px;
+
+            height: 10px;
+
+            border-radius: 50%;
+
+            border: 2px solid var(--color-gray-600);
+
+        }
+
+        .product-screenshot-dot.red { background: #ef4444; border-color: #dc2626; }
+
+        .product-screenshot-dot.yellow { background: #eab308; border-color: #d97706; }
+
+        .product-screenshot-dot.green { background: #22c55e; border-color: #16a34a; }
+
+        .product-screenshot-title {
+
+            font-size: 0.7rem;
+
+            color: var(--color-gray-500);
+
+            margin-left: 0.5rem;
+
+            font-family: var(--font-mono);
+
+        }
+
+        .product-screenshot-body {
+
+            padding: 14px;
+
+            font-family: var(--font-mono);
+
+            font-size: 0.72rem;
+
+            line-height: 1.6;
+
+            color: var(--color-gray-300);
+
+        }
+
+        .product-screenshot-body .pii-hl {
+
+            background: #ffe600;
+
+            color: #0a0a0a;
+
+            font-weight: 700;
+
+            padding: 0 2px;
+
+            border-radius: 2px;
+
+        }
+
+        .product-screenshot-body .pii-remove {
+
+            display: inline-block;
+
+            background: #ff3b3b;
+
+            color: #fff;
+
+            font-weight: 700;
+
+            padding: 2px 6px;
+
+            border-radius: 3px;
+
+            font-size: 0.65rem;
+
+            margin-top: 8px;
+
+        }
+
+        .product-body {
+
+            padding: 2.5rem;
+
+            display: flex;
+
+            flex-direction: column;
+
+            justify-content: center;
+
+        }
+
+        .product-body .product-tag {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            gap: 0.4rem;
+
+            background: rgba(6, 182, 212, 0.1);
+
+            border: 1px solid var(--glass-border);
+
+            border-radius: 50px;
+
+            padding: 0.3rem 0.8rem;
+
+            font-size: 0.75rem;
+
+            font-weight: 600;
+
+            color: var(--color-cyan-400);
+
+            text-transform: uppercase;
+
+            letter-spacing: 0.05em;
+
+            margin-bottom: 1rem;
+
+            width: fit-content;
+
+        }
+
+        .product-body h3 {
+
+            font-size: clamp(1.4rem, 2.5vw, 1.8rem);
+
+            margin-bottom: 0.5rem;
+
+        }
+
+        .product-body .product-subtitle {
+
+            color: var(--color-gray-400);
+
+            font-size: 0.95rem;
+
+            margin-bottom: 1.2rem;
+
+        }
+
+        .product-body p {
+
+            color: var(--color-gray-300);
+
+            font-size: 0.92rem;
+
+            line-height: 1.7;
+
+        }
+
+        .product-features {
+
+            display: grid;
+
+            grid-template-columns: 1fr 1fr;
+
+            gap: 0.6rem;
+
+            margin: 1.2rem 0 1.5rem;
+
+        }
+
+        .product-feature-item {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 0.5rem;
+
+            font-size: 0.85rem;
+
+            color: var(--color-gray-200);
+
+        }
+
+        .product-feature-item-icon {
+
+            color: var(--color-cyan-400);
+
+            flex-shrink: 0;
+
+            font-size: 0.7rem;
+
+        }
+
+        .product-tech-tags {
+
+            display: flex;
+
+            flex-wrap: wrap;
+
+            gap: 0.5rem;
+
+            margin-top: 1rem;
+
+        }
+
+        .product-tech-tag {
+
+            background: rgba(255,255,255,0.04);
+
+            border: 1px solid rgba(255,255,255,0.06);
+
+            padding: 0.3rem 0.7rem;
+
+            border-radius: 4px;
+
+            font-size: 0.72rem;
+
+            color: var(--color-gray-400);
+
+            font-family: var(--font-mono);
+
+        }
+
+        .product-actions {
+
+            display: flex;
+
+            flex-wrap: wrap;
+
+            gap: 0.8rem;
+
+            margin-top: 1.5rem;
+
+        }
+
+        .product-btn {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            gap: 0.4rem;
+
+            padding: 0.65rem 1.4rem;
+
+            border-radius: 8px;
+
+            font-weight: 600;
+
+            font-size: 0.88rem;
+
+            cursor: pointer;
+
+            border: none;
+
+            transition: all var(--transition-fast);
+
+            text-decoration: none;
+
+            font-family: var(--font-sans);
+
+        }
+
+        .product-btn-primary {
+
+            background: linear-gradient(135deg, var(--color-cyan-500), var(--color-cyan-600));
+
+            color: var(--color-navy-950);
+
+            box-shadow: 0 4px 16px rgba(6, 182, 212, 0.2);
+
+        }
+
+        .product-btn-primary:hover {
+
+            transform: translateY(-2px);
+
+            box-shadow: 0 6px 24px rgba(6, 182, 212, 0.35);
+
+            color: var(--color-navy-950);
+
+        }
+
+        .product-btn-secondary {
+
+            background: transparent;
+
+            color: var(--color-white);
+
+            border: 1px solid var(--color-gray-600);
+
+        }
+
+        .product-btn-secondary:hover {
+
+            border-color: var(--color-cyan-400);
+
+            color: var(--color-cyan-400);
+
+            transform: translateY(-2px);
+
+        }
+
+
+
+        @media (max-width: 768px) {
+
+            .product-card { grid-template-columns: 1fr; }
+
+            .product-visual { min-height: 240px; padding: 1.2rem; }
+
+            .product-body { padding: 1.5rem; }
+
+            .product-features { grid-template-columns: 1fr; }
+
+        }
+
+
+
+        /* ============================================
+
+           PRODUCT CAROUSEL
+
+           ============================================ */
+
+        .products-carousel {
+
+            position: relative;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 0;
+
+        }
+
+        .carousel-track-wrapper {
+
+            flex: 1;
+
+            overflow: hidden;
+
+            border-radius: var(--radius-xl);
+
+        }
+
+        .carousel-track {
+
+            display: flex;
+
+            transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
+        }
+
+        .carousel-slide {
+
+            min-width: 100%;
+
+            box-sizing: border-box;
+
+        }
+
+        .carousel-arrow {
+
+            position: absolute;
+
+            top: 50%;
+
+            transform: translateY(-50%);
+
+            z-index: 10;
+
+            width: 44px;
+
+            height: 44px;
+
+            border-radius: 50%;
+
+            background: var(--glass-bg);
+
+            backdrop-filter: var(--glass-blur);
+
+            -webkit-backdrop-filter: var(--glass-blur);
+
+            border: 1px solid var(--glass-border);
+
+            color: var(--color-white);
+
+            font-size: 1.3rem;
+
+            cursor: pointer;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            transition: all var(--transition-fast);
+
+            box-shadow: var(--glass-shadow);
+
+        }
+
+        .carousel-arrow:hover {
+
+            background: rgba(34, 211, 238, 0.2);
+
+            border-color: var(--color-cyan-400);
+
+            transform: translateY(-50%) scale(1.1);
+
+        }
+
+        .carousel-arrow-left {
+
+            left: -56px;
+
+        }
+
+        .carousel-arrow-right {
+
+            right: -56px;
+
+        }
+
+        .carousel-indicators {
+
+            display: flex;
+
+            justify-content: center;
+
+            gap: 0.6rem;
+
+            margin-top: 1.5rem;
+
+        }
+
+        .carousel-dot {
+
+            width: 10px;
+
+            height: 10px;
+
+            border-radius: 50%;
+
+            border: 2px solid var(--color-gray-600);
+
+            background: transparent;
+
+            cursor: pointer;
+
+            padding: 0;
+
+            transition: all var(--transition-fast);
+
+        }
+
+        .carousel-dot.active {
+
+            background: var(--color-cyan-400);
+
+            border-color: var(--color-cyan-400);
+
+            box-shadow: 0 0 8px rgba(6, 182, 212, 0.4);
+
+        }
+
+        .carousel-dot:hover {
+
+            border-color: var(--color-cyan-400);
+
+        }
+
+        @media (max-width: 900px) {
+
+            .carousel-arrow-left { left: -16px; }
+
+            .carousel-arrow-right { right: -16px; }
+
+            .carousel-arrow { width: 36px; height: 36px; font-size: 1rem; }
+
+        }
+
+
+
+        /* ============================================
+
+           PROJECTS SECTION
+
+           ============================================ */
+
+        .projects-grid {
+
+            display: grid;
+
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+
+            gap: 1.5rem;
+
+        }
+
+        .project-card {
+
+            background: var(--glass-bg);
+
+            backdrop-filter: var(--glass-blur);
+
+            -webkit-backdrop-filter: var(--glass-blur);
+
+            border: 1px solid var(--glass-border);
+
+            border-radius: var(--radius-lg);
+
+            overflow: hidden;
+
+            transition: all var(--transition-normal);
+
+        }
+
+        .project-card:hover {
+
+            transform: translateY(-4px);
+
+            box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+
+            border-color: rgba(34, 211, 238, 0.3);
+
+        }
+
+        .project-thumb {
+
+            width: 100%;
+
+            height: 180px;
+
+            background: linear-gradient(135deg, var(--color-navy-600), var(--color-navy-700));
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-size: 2.5rem;
+
+            color: var(--color-gray-500);
+
+        }
+
+        .project-body { padding: 1.5rem; }
+
+        .project-body h3 { margin-bottom: 0.5rem; font-size: 1.1rem; }
+
+        .project-body p { color: var(--color-gray-400); font-size: 0.88rem; }
+
+
+
+        /* ============================================
+
+           WHY WORK WITH ME
+
+           ============================================ */
+
+        .why-grid {
+
+            display: grid;
+
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+
+            gap: 1.5rem;
+
+        }
+
+        .why-card {
+
+            background: var(--glass-bg);
+
+            backdrop-filter: var(--glass-blur);
+
+            -webkit-backdrop-filter: var(--glass-blur);
+
+            border: 1px solid var(--glass-border);
+
+            border-radius: var(--radius-lg);
+
+            padding: 1.8rem;
+
+            text-align: center;
+
+            transition: all var(--transition-normal);
+
+        }
+
+        .why-card:hover {
+
+            transform: translateY(-3px);
+
+            border-color: rgba(34, 211, 238, 0.3);
+
+        }
+
+        .why-icon {
+
+            width: 52px;
+
+            height: 52px;
+
+            background: rgba(34, 211, 238, 0.1);
+
+            border-radius: var(--radius-md);
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-size: 1.5rem;
+
+            margin: 0 auto 1rem;
+
+        }
+
+        .why-card h4 { font-size: 0.95rem; margin-bottom: 0.3rem; }
+
+        .why-card p { color: var(--color-gray-500); font-size: 0.82rem; margin: 0; }
+
+
+
+        /* ============================================
+
+           PROCESS SECTION
+
+           ============================================ */
+
+        .process-timeline {
+
+            display: grid;
+
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+
+            gap: 1.5rem;
+
+            position: relative;
+
+        }
+
+        .process-step {
+
+            text-align: center;
+
+            position: relative;
+
+        }
+
+        .process-step-number {
+
+            width: 56px;
+
+            height: 56px;
+
+            background: linear-gradient(135deg, var(--color-cyan-500), var(--color-cyan-600));
+
+            border-radius: 50%;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-weight: 800;
+
+            font-size: 1.3rem;
+
+            color: var(--color-navy-950);
+
+            margin: 0 auto 1.2rem;
+
+            position: relative;
+
+        }
+
+        .process-step h4 { margin-bottom: 0.3rem; font-size: 1rem; }
+
+        .process-step p { color: var(--color-gray-400); font-size: 0.85rem; margin: 0; }
+
+
+
+        /* ============================================
+
+           TECH STACK
+
+           ============================================ */
+
+        .tech-grid {
+
+            display: grid;
+
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+
+            gap: 1rem;
+
+        }
+
+        .tech-item {
+
+            background: var(--glass-bg);
+
+            backdrop-filter: var(--glass-blur);
+
+            -webkit-backdrop-filter: var(--glass-blur);
+
+            border: 1px solid var(--glass-border);
+
+            border-radius: var(--radius-md);
+
+            padding: 1.2rem 0.8rem;
+
+            text-align: center;
+
+            transition: all var(--transition-normal);
+
+        }
+
+        .tech-item:hover {
+
+            border-color: rgba(34, 211, 238, 0.3);
+
+            transform: translateY(-2px);
+
+        }
+
+        .tech-item-icon {
+
+            font-size: 1.8rem;
+
+            margin-bottom: 0.5rem;
+
+            display: block;
+
+        }
+
+        .tech-item-name {
+
+            font-size: 0.82rem;
+
+            color: var(--color-gray-300);
+
+            font-weight: 500;
+
+        }
+
+
+
+        /* ============================================
+
+           TESTIMONIALS
+
+           ============================================ */
+
+        .testimonials-grid {
+
+            display: grid;
+
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+
+            gap: 1.5rem;
+
+        }
+
+        .testimonial-card {
+
+            background: var(--glass-bg);
+
+            backdrop-filter: var(--glass-blur);
+
+            -webkit-backdrop-filter: var(--glass-blur);
+
+            border: 1px solid var(--glass-border);
+
+            border-radius: var(--radius-lg);
+
+            padding: 2rem;
+
+            position: relative;
+
+        }
+
+        .testimonial-quote {
+
+            font-size: 2rem;
+
+            color: var(--color-cyan-500);
+
+            line-height: 1;
+
+            margin-bottom: 0.5rem;
+
+        }
+
+        .testimonial-text {
+
+            color: var(--color-gray-300);
+
+            font-style: italic;
+
+            font-size: 0.95rem;
+
+            margin-bottom: 1.2rem;
+
+            line-height: 1.6;
+
+        }
+
+        .testimonial-author {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 0.8rem;
+
+        }
+
+        .testimonial-avatar {
+
+            width: 44px;
+
+            height: 44px;
+
+            border-radius: 50%;
+
+            background: var(--color-navy-600);
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-weight: 600;
+
+            color: var(--color-cyan-400);
+
+        }
+
+        .testimonial-name {
+
+            font-weight: 600;
+
+            font-size: 0.9rem;
+
+            color: var(--color-white);
+
+        }
+
+        .testimonial-role {
+
+            font-size: 0.8rem;
+
+            color: var(--color-gray-500);
+
+        }
+
+
+
+        /* ============================================
+
+           BLOG
+
+           ============================================ */
+
+        .blog-grid {
+
+            display: grid;
+
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+
+            gap: 1.5rem;
+
+        }
+
+        .blog-card {
+
+            background: var(--glass-bg);
+
+            backdrop-filter: var(--glass-blur);
+
+            -webkit-backdrop-filter: var(--glass-blur);
+
+            border: 1px solid var(--glass-border);
+
+            border-radius: var(--radius-lg);
+
+            overflow: hidden;
+
+            transition: all var(--transition-normal);
+
+        }
+
+        .blog-card:hover {
+
+            transform: translateY(-4px);
+
+            box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+
+            border-color: rgba(34, 211, 238, 0.3);
+
+        }
+
+        .blog-thumb {
+
+            height: 160px;
+
+            background: linear-gradient(135deg, var(--color-navy-600), var(--color-navy-500));
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-size: 2rem;
+
+        }
+
+        .blog-body { padding: 1.5rem; }
+
+        .blog-body h4 { font-size: 1rem; margin-bottom: 0.5rem; }
+
+        .blog-date {
+
+            font-size: 0.78rem;
+
+            color: var(--color-gray-500);
+
+            margin-bottom: 0.75rem;
+
+        }
+
+        .blog-link {
+
+            font-size: 0.85rem;
+
+            font-weight: 600;
+
+            color: var(--color-cyan-400);
+
+            display: inline-flex;
+
+            align-items: center;
+
+            gap: 0.3rem;
+
+        }
+
+        .blog-link:hover { gap: 0.5rem; }
+
+
+
+        /* ============================================
+
+           CONTACT SECTION
+
+           ============================================ */
+
+        .contact-grid {
+
+            display: grid;
+
+            grid-template-columns: 1fr 1.2fr;
+
+            gap: 3rem;
+
+            align-items: start;
+
+        }
+
+        .contact-info h2 { margin-bottom: 0.75rem; }
+
+        .contact-info p { color: var(--color-gray-400); }
+
+        .contact-details {
+
+            margin-top: 2rem;
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 1rem;
+
+        }
+
+        .contact-detail {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 0.75rem;
+
+            color: var(--color-gray-300);
+
+            font-size: 0.9rem;
+
+        }
+
+        .contact-detail-icon {
+
+            width: 40px;
+
+            height: 40px;
+
+            background: rgba(34, 211, 238, 0.1);
+
+            border-radius: var(--radius-md);
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            flex-shrink: 0;
+
+            font-size: 1rem;
+
+        }
+
+        .contact-form-wrapper {
+
+            background: var(--glass-bg);
+
+            backdrop-filter: var(--glass-blur);
+
+            -webkit-backdrop-filter: var(--glass-blur);
+
+            border: 1px solid var(--glass-border);
+
+            border-radius: var(--radius-xl);
+
+            padding: 2.5rem;
+
+            box-shadow: var(--glass-shadow);
+
+        }
+
+        .form-grid {
+
+            display: grid;
+
+            grid-template-columns: 1fr 1fr;
+
+            gap: 1rem;
+
+        }
+
+        .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
+
+        .form-group.full { grid-column: 1 / -1; }
+
+        .form-group label {
+
+            font-size: 0.85rem;
+
+            font-weight: 600;
+
+            color: var(--color-gray-200);
+
+        }
+
+        .form-group input,
+
+        .form-group select,
+
+        .form-group textarea {
+
+            background: var(--color-navy-800);
+
+            border: 1px solid var(--color-navy-600);
+
+            border-radius: var(--radius-sm);
+
+            padding: 0.75rem 1rem;
+
+            color: var(--color-white);
+
+            font-family: var(--font-sans);
+
+            font-size: 0.9rem;
+
+            transition: border-color var(--transition-fast);
+
+            outline: none;
+
+            width: 100%;
+
+        }
+
+        .form-group input:focus,
+
+        .form-group select:focus,
+
+        .form-group textarea:focus {
+
+            border-color: var(--color-cyan-500);
+
+            box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.1);
+
+        }
+
+        .form-group textarea { min-height: 120px; resize: vertical; }
+
+        .form-group input.error,
+
+        .form-group textarea.error { border-color: #ef4444; }
+
+        .form-error-text {
+
+            font-size: 0.75rem;
+
+            color: #ef4444;
+
+            display: none;
+
+        }
+
+        .form-error-text.visible { display: block; }
+
+        .form-success {
+
+            display: none;
+
+            text-align: center;
+
+            padding: 2rem;
+
+        }
+
+        .form-success.visible { display: block; }
+
+        .form-success-icon {
+
+            font-size: 3rem;
+
+            margin-bottom: 1rem;
+
+        }
+
+        .form-submit-row { margin-top: 1.2rem; }
+
+        .form-submit-row .btn { width: 100%; justify-content: center; font-size: 1rem; padding: 0.9rem; }
+
+
+
+        @media (max-width: 768px) {
+
+            .contact-grid { grid-template-columns: 1fr; }
+
+            .form-grid { grid-template-columns: 1fr; }
+
+        }
+
+
+
+        /* ============================================
+
+           FOOTER
+
+           ============================================ */
+
+        .footer {
+
+            background: var(--color-navy-900);
+
+            border-top: 1px solid var(--glass-border);
+
+            padding: 4rem 1.5rem 2rem;
+
+        }
+
+        .footer-inner {
+
+            max-width: var(--max-width);
+
+            margin: 0 auto;
+
+            display: grid;
+
+            grid-template-columns: 2fr 1fr 1fr;
+
+            gap: 3rem;
+
+        }
+
+        .footer-brand h4 {
+
+            font-size: 1.2rem;
+
+            margin-bottom: 0.5rem;
+
+        }
+
+        .footer-brand p {
+
+            color: var(--color-gray-400);
+
+            font-size: 0.88rem;
+
+            margin-bottom: 1.2rem;
+
+            max-width: 300px;
+
+        }
+
+        .footer-social {
+
+            display: flex;
+
+            gap: 0.75rem;
+
+        }
+
+        .footer-social a {
+
+            width: 40px;
+
+            height: 40px;
+
+            border-radius: var(--radius-sm);
+
+            background: rgba(255,255,255,0.05);
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            transition: all var(--transition-fast);
+
+            font-size: 1.1rem;
+
+        }
+
+        .footer-social a:hover {
+
+            background: rgba(34, 211, 238, 0.15);
+
+            color: var(--color-cyan-400);
+
+        }
+
+        .footer-links h4 {
+
+            font-size: 0.85rem;
+
+            text-transform: uppercase;
+
+            letter-spacing: 0.08em;
+
+            color: var(--color-gray-400);
+
+            margin-bottom: 1rem;
+
+        }
+
+        .footer-links ul { display: flex; flex-direction: column; gap: 0.5rem; }
+
+        .footer-links a {
+
+            color: var(--color-gray-500);
+
+            font-size: 0.88rem;
+
+            transition: color var(--transition-fast);
+
+        }
+
+        .footer-links a:hover { color: var(--color-cyan-400); }
+
+        .footer-bottom {
+
+            max-width: var(--max-width);
+
+            margin: 2.5rem auto 0;
+
+            padding-top: 1.5rem;
+
+            border-top: 1px solid var(--glass-border);
+
+            text-align: center;
+
+            color: var(--color-gray-600);
+
+            font-size: 0.82rem;
+
+        }
+
+
+
+        @media (max-width: 768px) {
+
+            .footer-inner { grid-template-columns: 1fr; gap: 2rem; text-align: center; }
+
+            .footer-brand p { max-width: 100%; }
+
+            .footer-social { justify-content: center; }
+
+        }
+
+
+
+        /* ============================================
+
+           ANIMATIONS
+
+           ============================================ */
+
+        .fade-in {
+
+            opacity: 0;
+
+            transform: translateY(30px);
+
+            transition: opacity 0.7s ease, transform 0.7s ease;
+
+        }
+
+        .fade-in.visible {
+
+            opacity: 1;
+
+            transform: translateY(0);
+
+        }
+
+        .fade-in-delay-1 { transition-delay: 0.1s; }
+
+        .fade-in-delay-2 { transition-delay: 0.2s; }
+
+        .fade-in-delay-3 { transition-delay: 0.3s; }
+
+        .fade-in-delay-4 { transition-delay: 0.4s; }
+
+
+
+        /* ============================================
+
+           MOBILE MENU OVERLAY
+
+           ============================================ */
+
+        .nav-overlay {
+
+            display: none;
+
+            position: fixed;
+
+            inset: 0;
+
+            background: rgba(0,0,0,0.5);
+
+            z-index: 999;
+
+        }
+
+        .nav-overlay.active { display: block; }
+
+
+
+        /* ============================================
+
+           SKIP LINK (ACCESSIBILITY)
+
+           ============================================ */
+
+        .skip-link {
+
+            position: absolute;
+
+            top: -100%;
+
+            left: 0;
+
+            background: var(--color-cyan-500);
+
+            color: var(--color-navy-950);
+
+            padding: 0.75rem 1.5rem;
+
+            z-index: 9999;
+
+            font-weight: 600;
+
+            border-radius: 0 0 var(--radius-sm) 0;
+
+        }
+
+        .skip-link:focus { top: 0; }
+
+
+
+        /* ============================================
+
+           MISC UTILITIES
+
+           ============================================ */
+
+        .text-gradient {
+
+            background: linear-gradient(135deg, var(--color-cyan-400), #38bdf8);
+
+            -webkit-background-clip: text;
+
+            -webkit-text-fill-color: transparent;
+
+            background-clip: text;
+
+        }
+
+        .divider {
+
+            width: 60px;
+
+            height: 3px;
+
+            background: linear-gradient(90deg, var(--color-cyan-500), transparent);
+
+            margin: 1rem auto;
+
+            border-radius: 2px;
+
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+
+            *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+
+        }
+
+    </style>
+
+
+
+    <!-- Preconnect to Google Fonts -->
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+
+</head>
+
+<body>
+
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+
+
+    <!-- ============================================
+
+         NAVIGATION
+
+         ============================================ -->
+
+    <nav class="nav" id="navbar" role="navigation" aria-label="Main navigation">
+
+        <div class="nav-inner">
+
+            <a href="#hero" class="nav-logo" aria-label="Woven Model Home">
+
+                <div class="nav-logo-icon">WM</div>
+
+                Woven Model
+
+            </a>
+
+            <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
+
+                <span></span><span></span><span></span>
+
+            </button>
+
+            <div class="nav-links" id="nav-links" role="menubar">
+
+                <a href="#about" role="menuitem">About</a>
+
+                <a href="#services" role="menuitem">Services</a>
+
+                <a href="#products" role="menuitem">Products</a>
+
+                <a href="#projects" role="menuitem">Projects</a>
+
+                <a href="#process" role="menuitem">Process</a>
+
+                <a href="#blog" role="menuitem">Insights</a>
+
+<a href="https://calendar.app.google/VcNdH476r22az1kj7" class="nav-cta" role="menuitem" target="_blank" rel="noopener noreferrer">Schedule a Consultation</a>
+                <a href="http://localhost:5173" class="nav-cta" role="menuitem" style="margin-left:0.5rem">Store</a>
+
+            </div>
+
+        </div>
+
+        <div class="nav-overlay" id="nav-overlay"></div>
+
+    </nav>
+
+
+
+    <!-- ============================================
+
+         HERO SECTION
+
+         ============================================ -->
+
+    <main id="main-content">
+
+    <section class="hero" id="hero" aria-label="Hero">
+
+        <div class="hero-grid">
+
+            <div class="hero-content">
+
+                <div class="hero-badge">
+
+                    <span class="hero-badge-dot" aria-hidden="true"></span>
+
+                    Available for Consulting
+
+                </div>
+
+                <h1 class="hero-name">Jude <span>Yearwood</span></h1>
+
+                <p class="hero-role">Technology Consultant | Founder of Woven Model</p>
+
+                <p class="hero-statement">
+
+                    Helping organizations leverage AI, automation, cloud technologies, and custom software to improve efficiency, security, and growth.
+
+                </p>
+
+                <div class="hero-buttons">
+
+                    <a href="https://calendar.app.google/VcNdH476r22az1kj7" class="btn btn-primary" target="_blank" rel="noopener noreferrer">
+
+                        <span>Schedule Consultation</span>
+
+                        <span aria-hidden="true">→</span>
+
+                    </a>
+
+                    <a href="#services" class="btn btn-secondary">View Services</a>
+
+                </div>
+
+                <div class="hero-trust">
+
+                    <div class="hero-trust-icon" aria-hidden="true">🏆</div>
+
+                    <span class="hero-trust-text">10+ Years of Enterprise Technology Experience</span>
+
+                </div>
+
+            </div>
+
+            <div class="hero-visual">
+
+                <div class="hero-photo-wrapper">
+
+                    <div class="hero-photo-bg" aria-hidden="true"></div>
+
+                    <div class="hero-photo" role="img" aria-label="Jude Yearwood — Professional headshot placeholder">
+
+                        <span class="hero-photo-placeholder" aria-hidden="true">👤</span>
+
+                    </div>
+
+                    <div class="hero-floating-card top-right" aria-hidden="true">
+
+                        <div class="fc-label">AI & Automation</div>
+
+                        <div class="fc-value">Expert</div>
+
+                    </div>
+
+                    <div class="hero-floating-card bottom-left" aria-hidden="true">
+
+                        <div class="fc-label">Enterprise Tech</div>
+
+                        <div class="fc-value">10+ Years</div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ============================================
+
+         ABOUT SECTION
+
+         ============================================ -->
+
+    <section class="section" id="about" aria-label="About Jude Yearwood">
+
+        <div class="section-inner">
+
+            <div class="about-grid">
+
+                <div class="about-content fade-in">
+
+                    <span class="section-label">About</span>
+
+                    <h2 class="section-title">Technology Consultant & Solutions Architect</h2>
+
+                    <p>
+
+                        I am a technology consultant with over 10 years of experience helping organizations design, secure, automate, and modernize their technology environments.
+
+                    </p>
+
+                    <p>
+
+                        Through Woven Model, I provide consulting and engineering services focused on artificial intelligence, business automation, cloud technologies, cybersecurity, and custom software development.
+
+                    </p>
+
+                    <p>
+
+                        My mission is simple: build intelligent systems that save time, reduce risk, and create measurable business value.
+
+                    </p>
+
+                    <div class="about-expertise">
+
+                        <h4>Core Expertise</h4>
+
+                        <div class="expertise-tags">
+
+                            <span class="expertise-tag">Microsoft Azure</span>
+
+                            <span class="expertise-tag">Microsoft 365</span>
+
+                            <span class="expertise-tag">Infrastructure Design</span>
+
+                            <span class="expertise-tag">Identity Management</span>
+
+                            <span class="expertise-tag">Endpoint Management</span>
+
+                            <span class="expertise-tag">Digital Transformation</span>
+
+                            <span class="expertise-tag">Cybersecurity Reviews</span>
+
+                            <span class="expertise-tag">Business Automation</span>
+
+                            <span class="expertise-tag">AI Solutions</span>
+
+                            <span class="expertise-tag">Custom App Development</span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="about-visual fade-in fade-in-delay-2">
+
+                    <div class="about-card">
+
+                        <div class="about-card-icon" aria-hidden="true">⚙️</div>
+
+                        <h3>Woven Model</h3>
+
+                        <p style="color:var(--color-gray-400);font-size:0.9rem;">Building Intelligent Systems That Scale</p>
+
+                        <p style="color:var(--color-gray-500);font-size:0.8rem;">AI • Automation • Enterprise Software • Security</p>
+
+                        <div class="about-stats">
+
+                            <div class="about-stat">
+
+                                <div class="about-stat-value">10+</div>
+
+                                <div class="about-stat-label">Years Experience</div>
+
+                            </div>
+
+                            <div class="about-stat">
+
+                                <div class="about-stat-value">50+</div>
+
+                                <div class="about-stat-label">Projects Delivered</div>
+
+                            </div>
+
+                            <div class="about-stat">
+
+                                <div class="about-stat-value">100%</div>
+
+                                <div class="about-stat-label">Client Satisfaction</div>
+
+                            </div>
+
+                            <div class="about-stat">
+
+                                <div class="about-stat-value">24/7</div>
+
+                                <div class="about-stat-label">Support Mindset</div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ============================================
+
+         SERVICES SECTION
+
+         ============================================ -->
+
+    <section class="section" id="services" aria-label="Services" style="background: var(--color-navy-900);">
+
+        <div class="section-inner">
+
+            <div class="section-header fade-in">
+
+                <span class="section-label">Services</span>
+
+                <h2 class="section-title">Enterprise Technology Services</h2>
+
+                <p class="section-subtitle">Comprehensive consulting and engineering services for modern organizations.</p>
+
+            </div>
+
+            <div class="services-grid">
+
+                <div class="service-card fade-in fade-in-delay-1">
+
+                    <div class="service-icon" aria-hidden="true">🤖</div>
+
+                    <h3>AI Solutions</h3>
+
+                    <p>Build AI-powered applications, internal assistants, knowledge systems, and intelligent workflows using company data.</p>
+
+                    <div class="service-features">
+
+                        <div class="service-feature"><span class="service-feature-icon">◆</span> AI Assistants</div>
+
+                        <div class="service-feature"><span class="service-feature-icon">◆</span> Internal Knowledge Systems</div>
+
+                        <div class="service-feature"><span class="service-feature-icon">◆</span> Role-Based AI Applications</div>
+
+                        <div class="service-feature"><span class="service-feature-icon">◆</span> LLM Integrations</div>
+
+                        <div class="service-feature"><span class="service-feature-icon">◆</span> AI Workflow Automation</div>
+
+                    </div>
+
+                </div>
+
+                <div class="service-card fade-in fade-in-delay-2">
+
+                    <div class="service-icon" aria-hidden="true">💻</div>
+
+                    <h3>Custom Software Development</h3>
+
+                    <p>Design and build custom business applications tailored to operational requirements.</p>
+
+                    <div class="service-features">
+
+                        <div class="service-feature"><span class="service-feature-icon">◆</span> Internal Portals</div>
+
+                        <div class="service-feature"><span class="service-feature-icon">◆</span> SaaS Platforms</div>
+
+                        <div class="service-feature"><span class="service-feature-icon">◆</span> Web Applications</div>
+
+                        <div class="service-feature"><span class="service-feature-icon">◆</span> API Development</div>
+
+                        <div class="service-feature"><span class="service-feature-icon">◆</span> Database Applications</div>
+
+                    </div>
+
+                </div>
+
+                <div class="service-card fade-in fade-in-delay-3">
+
+                    <div class="service-icon" aria-hidden="true">⚡</div>
+
+                    <h3>Business Automation</h3>
+
+                    <p>Eliminate repetitive tasks and improve operational efficiency.</p>
+
+                    <div class="service-features">
+
+                        <div class="service-feature"><span class="service-feature-icon">◆</span> Power Automate</div>
+
+                        <div class="service-feature"><span class="service-feature-icon">◆</span> Workflow Automation</div>
+
+                        <div class="service-feature"><span class="service-feature-icon">◆</span> Automated Reporting</div>
+
+                        <div class="service-feature"><span class="service-feature-icon">◆</span> Data Synchronization</div>
+
+                        <div class="service-feature"><span class="service-feature-icon">◆</span> Process Optimization</div>
+
+                    </div>
+
+                </div>
+
+                <div class="service-card fade-in fade-in-delay-1">
+
+                    <div class="service-icon" aria-hidden="true">🛡️</div>
+
+                    <h3>Cybersecurity Reviews</h3>
+
+                    <p>Identify security risks and improve organizational resilience.</p>
+
+                    <div class="service-features">
+
+                        <div class="service-feature"><span class="service-feature-icon">◆</span> Security Assessments</div>
+
+                        <div class="service-feature"><span class="service-feature-icon">◆</span> Infrastructure Reviews</div>
+
+                        <div class="service-feature"><span class="service-feature-icon">◆</span> Application Security Reviews</div>
+
+                        <div class="service-feature"><span class="service-feature-icon">◆</span> Risk Analysis</div>
+
+                        <div class="service-feature"><span class="service-feature-icon">◆</span> Compliance Readiness</div>
+
+                    </div>
+
+                </div>
+
+                <div class="service-card fade-in fade-in-delay-2">
+
+                    <div class="service-icon" aria-hidden="true">☁️</div>
+
+                    <h3>Enterprise Technology Consulting</h3>
+
+                    <p>Modernize and optimize enterprise environments.</p>
+
+                    <div class="service-features">
+
+                        <div class="service-feature"><span class="service-feature-icon">◆</span> Azure Architecture</div>
+
+                        <div class="service-feature"><span class="service-feature-icon">◆</span> Microsoft 365</div>
+
+                        <div class="service-feature"><span class="service-feature-icon">◆</span> Infrastructure Design</div>
+
+                        <div class="service-feature"><span class="service-feature-icon">◆</span> Identity & Access Management</div>
+
+                        <div class="service-feature"><span class="service-feature-icon">◆</span> Endpoint Management</div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ============================================
+
+         PRODUCTS SECTION
+
+         ============================================ -->
+
+    <section class="section" id="products" aria-label="Products" style="background: var(--color-navy-900);">
+
+        <div class="section-inner">
+
+            <div class="section-header fade-in">
+
+                <span class="section-label">Products</span>
+
+                <h2 class="section-title">Software We Build</h2>
+
+                <p class="section-subtitle">Ready-to-use applications crafted by Woven Model for real-world needs.</p>
+
+            </div>
+
+
+
+            <div class="products-carousel">
+
+                <button class="carousel-arrow carousel-arrow-left" id="carousel-prev" aria-label="Previous product">◀</button>
+
+                <div class="carousel-track-wrapper">
+
+                    <div class="carousel-track" id="carousel-track">
+
+
+
+                        <!-- Slide 1: Stratum AI Trading Strategy Analyzer -->
+
+                        <div class="carousel-slide">
+
+                            <div class="product-card">
+
+                                <div class="product-visual">
+
+                                    <div class="product-screenshot">
+
+                                        <div class="product-screenshot-header">
+
+                                            <span class="product-screenshot-dot red"></span>
+
+                                            <span class="product-screenshot-dot yellow"></span>
+
+                                            <span class="product-screenshot-dot green"></span>
+
+                                            <span class="product-screenshot-title">Stratum — AI Trading Strategy Analyzer</span>
+
+                                        </div>
+
+                                        <img src="assets/stratum_backtest.png" alt="Stratum backtest tab with run configuration and results table" style="width:100%; border-radius: var(--radius-sm); display: block;">
+
+                                    </div>
+
+                                </div>
+
+                                <div class="product-body">
+
+                                    <div class="product-tag"><span>✦</span> Desktop App</div>
+
+                                    <h3>Stratum — AI Trading Strategy Analyzer</h3>
+
+                                    <p class="product-subtitle">Backtest, analyze, and optimize trading strategies with AI-powered insights.</p>
+
+                                    <p>
+
+                                        A professional Windows desktop application that replays years of historical market data
+
+                                        using an <strong>RSI + SMA</strong> mean-reversion strategy. Simulates trades bar-by-bar,
+
+                                        generates AI-powered symbol ratings (0-100), runs parameter optimization across 625
+
+                                        combinations, and exports professional reports in PDF, Excel, CSV, and JSON.
+
+                                    </p>
+
+                                    <div class="product-features">
+
+                                        <div class="product-feature-item"><span class="product-feature-icon">◆</span> Historical backtesting engine</div>
+
+                                        <div class="product-feature-item"><span class="product-feature-icon">◆</span> AI-powered symbol ratings 0-100</div>
+
+                                        <div class="product-feature-item"><span class="product-feature-icon">◆</span> Grid search parameter optimization</div>
+
+                                        <div class="product-feature-item"><span class="product-feature-icon">◆</span> Multi-symbol comparison</div>
+
+                                        <div class="product-feature-item"><span class="product-feature-icon">◆</span> Watchlist management</div>
+
+                                        <div class="product-feature-item"><span class="product-feature-icon">◆</span> PDF / Excel / CSV / JSON export</div>
+
+                                        <div class="product-feature-item"><span class="product-feature-icon">◆</span> Per-symbol config overrides</div>
+
+                                        <div class="product-feature-item"><span class="product-feature-icon">◆</span> 24-hour free trial available</div>
+
+                                    </div>
+
+                                    <div class="product-tech-tags">
+
+                                        <span class="product-tech-tag">PyQt6</span>
+
+                                        <span class="product-tech-tag">Python</span>
+
+                                        <span class="product-tech-tag">Windows</span>
+
+                                        <span class="product-tech-tag">Yahoo Finance</span>
+
+                                        <span class="product-tech-tag">PyInstaller</span>
+
+                                    </div>
+
+                                    <div class="product-actions">
+
+                                        <a href="stratum/" class="product-btn product-btn-primary">📖 Read Documentation</a>
+
+                                        <a href="#contact" class="product-btn product-btn-secondary">Get License</a>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <!-- Slide 2: DocToAudio -->
+
+                        <div class="carousel-slide">
+
+                            <div class="product-card">
+
+                                <div class="product-visual">
+
+                                    <div class="product-screenshot">
+
+                                        <div class="product-screenshot-header">
+
+                                            <span class="product-screenshot-dot red"></span>
+
+                                            <span class="product-screenshot-dot yellow"></span>
+
+                                            <span class="product-screenshot-dot green"></span>
+
+                                            <span class="product-screenshot-title">DocToAudio — Woven Model Edition</span>
+
+                                        </div>
+
+                                        <div class="product-screenshot-body" style="font-size:0.68rem;">
+
+                                            ┌─────────────────────────────────┐<br>
+
+                                            │  📄 <strong>DocToAudio</strong>                   │<br>
+
+                                            │  Convert → Audiobook             │<br>
+
+                                            │                                   │<br>
+
+                                            │  [📁 Drop PDF, DOCX, TXT, RTF]   │<br>
+
+                                            │  ─────────────────────────────   │<br>
+
+                                            │  Voice:   <span style="color:#22d3ee;">Microsoft David</span>     │<br>
+
+                                            │  Speed:   ████████░░ 1.5x        │<br>
+
+                                            │  Pitch:   ██████░░░░ 1.0x        │<br>
+
+                                            │  Format:  <span style="color:#22d3ee;">MP3</span> · 192 kbps       │<br>
+
+                                            │                                   │<br>
+
+                                            │  [▶ <strong>Preview</strong>]  [<span style="color:#22d3ee;">+ Add to Queue</span>]│<br>
+
+                                            └─────────────────────────────────┘<br>
+
+                                            <br>
+
+                                            ⏳ <strong>Queue:</strong> 2 pending · 1 converting
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                                <div class="product-body">
+
+                                    <div class="product-tag"><span>✦</span> Desktop App</div>
+
+                                    <h3>DocToAudio — Woven Model Edition</h3>
+
+                                    <p class="product-subtitle">Convert documents into professional-quality audiobooks with a polished desktop application.</p>
+
+                                    <p>
+
+                                        A professional Windows application that turns PDFs, DOCX, TXT, and RTF files into audiobooks
+
+                                        using Windows TTS voices. Features multiple voices, speed and pitch control, a background
+
+                                        conversion queue, and a built-in audiobook library with search and favorites.
+
+                                    </p>
+
+                                    <div class="product-features">
+
+                                        <div class="product-feature-item"><span class="product-feature-icon">◆</span> PDF, DOCX, TXT, RTF import</div>
+
+                                        <div class="product-feature-item"><span class="product-feature-icon">◆</span> Multiple TTS voices</div>
+
+                                        <div class="product-feature-item"><span class="product-feature-icon">◆</span> Speed 0.5x–3.0x, pitch control</div>
+
+                                        <div class="product-feature-item"><span class="product-feature-icon">◆</span> Export to MP3, WAV, OGG</div>
+
+                                        <div class="product-feature-item"><span class="product-feature-icon">◆</span> Background queue with progress</div>
+
+                                        <div class="product-feature-item"><span class="product-feature-icon">◆</span> Built-in audiobook library</div>
+
+                                        <div class="product-feature-item"><span class="product-feature-icon">◆</span> 14-day free trial</div>
+
+                                        <div class="product-feature-item"><span class="product-feature-icon">◆</span> Dark & light themes</div>
+
+                                    </div>
+
+                                    <div class="product-tech-tags">
+
+                                        <span class="product-tech-tag">PyQt6</span>
+
+                                        <span class="product-tech-tag">Python</span>
+
+                                        <span class="product-tech-tag">Windows</span>
+
+                                        <span class="product-tech-tag">TTS</span>
+
+                                        <span class="product-tech-tag">PyInstaller</span>
+
+                                    </div>
+
+                                    <div class="product-actions">
+
+                                        <a href="#contact" class="product-btn product-btn-primary">Download Setup</a>
+
+                                        <a href="#contact" class="product-btn product-btn-secondary">Portable EXE</a>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <!-- Slide 3: PII Remover -->
+
+                        <div class="carousel-slide">
+
+                            <div class="product-card">
+
+                                <div class="product-visual">
+
+                                    <div class="product-screenshot">
+
+                                        <div class="product-screenshot-header">
+
+                                            <span class="product-screenshot-dot red"></span>
+
+                                            <span class="product-screenshot-dot yellow"></span>
+
+                                            <span class="product-screenshot-dot green"></span>
+
+                                            <span class="product-screenshot-title">Woven Model PII Remover</span>
+
+                                        </div>
+
+                                        <div class="product-screenshot-body">
+
+                                            ┌─────────────────────────────────┐<br>
+
+                                            │  Paste your prompt here...       │<br>
+
+                                            │  "Hi, I'm <span class="pii-hl">John Doe</span>,         │<br>
+
+                                            │  my SSN is <span class="pii-hl">123-45-6789</span>.    │<br>
+
+                                            │  Please process my request for   │<br>
+
+                                            │  <span class="pii-hl">$52,000</span> at               │<br>
+
+                                            │  <span class="pii-hl">123 Main St</span>."            │<br>
+
+                                            │                                   │<br>
+
+                                            │  [<span class="pii-remove">Remove PII (after confirm)</span>]<br>
+
+                                            └─────────────────────────────────┘<br>
+
+                                            <br>
+
+                                            ✦ <strong>4 matches</strong> — click to redact
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                                <div class="product-body">
+
+                                    <div class="product-tag"><span>✦</span> Desktop App</div>
+
+                                    <h3>Woven Model PII Remover</h3>
+
+                                    <p class="product-subtitle">Protect sensitive data before it reaches AI prompts, documents, or workflows — with zero cloud uploads.</p>
+
+                                    <p>
+
+                                        An <strong>on-device</strong> desktop tool that detects, highlights, and redacts sensitive
+
+                                        information from text before you use it in prompts, documents, or workflows.
+
+                                        Detection runs entirely locally — nothing leaves your machine.
+
+                                    </p>
+
+                                    <div class="product-features">
+
+                                        <div class="product-feature-item"><span class="product-feature-icon">◆</span> Local PII detection</div>
+
+                                        <div class="product-feature-item"><span class="product-feature-icon">◆</span> Highlighted preview</div>
+
+                                        <div class="product-feature-item"><span class="product-feature-icon">◆</span> Confirm-before-redact</div>
+
+                                        <div class="product-feature-item"><span class="product-feature-icon">◆</span> One-click clipboard copy</div>
+
+                                        <div class="product-feature-item"><span class="product-feature-icon">◆</span> No data leaves device</div>
+
+                                        <div class="product-feature-item"><span class="product-feature-icon">◆</span> Zero web server needed</div>
+
+                                    </div>
+
+                                    <div class="product-tech-tags">
+
+                                        <span class="product-tech-tag">Electron</span>
+
+                                        <span class="product-tech-tag">JavaScript</span>
+
+                                        <span class="product-tech-tag">Windows</span>
+
+                                        <span class="product-tech-tag">Local</span>
+
+                                    </div>
+
+                                    <div class="product-actions">
+
+                                        <a href="#contact" class="product-btn product-btn-primary">Download Setup</a>
+
+                                        <a href="#contact" class="product-btn product-btn-secondary">Portable Version</a>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+
+                    </div>
+
+                </div>
+
+                <button class="carousel-arrow carousel-arrow-right" id="carousel-next" aria-label="Next product">▶</button>
+
+            </div>
+
+
+
+            <div class="carousel-indicators" id="carousel-indicators">
+
+                <button class="carousel-dot active" data-index="0" aria-label="Go to slide 1"></button>
+
+                <button class="carousel-dot" data-index="1" aria-label="Go to slide 2"></button>
+
+                <button class="carousel-dot" data-index="2" aria-label="Go to slide 3"></button>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ============================================
+
+         PROJECTS SECTION
+
+         ============================================ -->
+
+    <section class="section" id="projects" aria-label="Featured Projects">
+
+        <div class="section-inner">
+
+            <div class="section-header fade-in">
+
+                <span class="section-label">Featured Projects</span>
+
+                <h2 class="section-title">Selected Work</h2>
+
+                <p class="section-subtitle">Delivering measurable results through technology.</p>
+
+            </div>
+
+            <div class="projects-grid">
+
+                <div class="project-card fade-in fade-in-delay-1">
+
+                    <div class="project-thumb" aria-hidden="true">🧠</div>
+
+                    <div class="project-body">
+
+                        <h3>Role-Based AI Knowledge Platform</h3>
+
+                        <p>An AI application that uses company data and documentation to provide role-specific intelligence and decision support.</p>
+
+                    </div>
+
+                </div>
+
+                <div class="project-card fade-in fade-in-delay-2">
+
+                    <div class="project-thumb" aria-hidden="true">⚙️</div>
+
+                    <div class="project-body">
+
+                        <h3>Enterprise Automation Suite</h3>
+
+                        <p>Automated workflows that reduced manual processing and increased operational efficiency across departments.</p>
+
+                    </div>
+
+                </div>
+
+                <div class="project-card fade-in fade-in-delay-3">
+
+                    <div class="project-thumb" aria-hidden="true">🛡️</div>
+
+                    <div class="project-body">
+
+                        <h3>Security Assessment Platform</h3>
+
+                        <p>Centralized platform for evaluating infrastructure and application security posture across the organization.</p>
+
+                    </div>
+
+                </div>
+
+                <div class="project-card fade-in fade-in-delay-4">
+
+                    <div class="project-thumb" aria-hidden="true">📊</div>
+
+                    <div class="project-body">
+
+                        <h3>Business Operations Dashboard</h3>
+
+                        <p>Custom management dashboard providing real-time business insights and automated reporting.</p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ============================================
+
+         WHY WORK WITH ME
+
+         ============================================ -->
+
+    <section class="section" id="why" aria-label="Why Work With Me" style="background: var(--color-navy-900);">
+
+        <div class="section-inner">
+
+            <div class="section-header fade-in">
+
+                <span class="section-label">Why Work With Me</span>
+
+                <h2 class="section-title">What Sets Woven Model Apart</h2>
+
+                <div class="divider" aria-hidden="true"></div>
+
+            </div>
+
+            <div class="why-grid">
+
+                <div class="why-card fade-in fade-in-delay-1">
+
+                    <div class="why-icon" aria-hidden="true">📅</div>
+
+                    <h4>10+ Years Experience</h4>
+
+                    <p>Deep enterprise technology expertise across industries.</p>
+
+                </div>
+
+                <div class="why-card fade-in fade-in-delay-2">
+
+                    <div class="why-icon" aria-hidden="true">🏢</div>
+
+                    <h4>Enterprise-Grade Solutions</h4>
+
+                    <p>Built for scale, security, and mission-critical operations.</p>
+
+                </div>
+
+                <div class="why-card fade-in fade-in-delay-3">
+
+                    <div class="why-icon" aria-hidden="true">🔒</div>
+
+                    <h4>Security-First Approach</h4>
+
+                    <p>Every solution designed with security as a foundational pillar.</p>
+
+                </div>
+
+                <div class="why-card fade-in fade-in-delay-4">
+
+                    <div class="why-icon" aria-hidden="true">📈</div>
+
+                    <h4>Practical Business Outcomes</h4>
+
+                    <p>Technology aligned with measurable business results.</p>
+
+                </div>
+
+                <div class="why-card fade-in fade-in-delay-1">
+
+                    <div class="why-icon" aria-hidden="true">🤖</div>
+
+                    <h4>Modern AI Expertise</h4>
+
+                    <p>Cutting-edge AI and LLM integration capabilities.</p>
+
+                </div>
+
+                <div class="why-card fade-in fade-in-delay-2">
+
+                    <div class="why-icon" aria-hidden="true">🏗️</div>
+
+                    <h4>Scalable Architecture</h4>
+
+                    <p>Systems designed to grow with your organization.</p>
+
+                </div>
+
+                <div class="why-card fade-in fade-in-delay-3">
+
+                    <div class="why-icon" aria-hidden="true">🤝</div>
+
+                    <h4>Long-Term Partnership</h4>
+
+                    <p>Committed to your success beyond project delivery.</p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ============================================
+
+         PROCESS SECTION
+
+         ============================================ -->
+
+    <section class="section" id="process" aria-label="Our Process">
+
+        <div class="section-inner">
+
+            <div class="section-header fade-in">
+
+                <span class="section-label">Process</span>
+
+                <h2 class="section-title">How We Work Together</h2>
+
+                <p class="section-subtitle">A proven approach to delivering successful technology outcomes.</p>
+
+            </div>
+
+            <div class="process-timeline">
+
+                <div class="process-step fade-in fade-in-delay-1">
+
+                    <div class="process-step-number">1</div>
+
+                    <h4>Discovery & Strategy</h4>
+
+                    <p>We start by understanding your goals, challenges, and current technology landscape.</p>
+
+                </div>
+
+                <div class="process-step fade-in fade-in-delay-2">
+
+                    <div class="process-step-number">2</div>
+
+                    <h4>Solution Design</h4>
+
+                    <p>We architect a tailored solution that aligns with your business objectives.</p>
+
+                </div>
+
+                <div class="process-step fade-in fade-in-delay-3">
+
+                    <div class="process-step-number">3</div>
+
+                    <h4>Implementation</h4>
+
+                    <p>We build, integrate, and deploy with precision and regular communication.</p>
+
+                </div>
+
+                <div class="process-step fade-in fade-in-delay-4">
+
+                    <div class="process-step-number">4</div>
+
+                    <h4>Optimization & Support</h4>
+
+                    <p>We monitor, refine, and support your solution for long-term success.</p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ============================================
+
+         TECHNOLOGY STACK
+
+         ============================================ -->
+
+    <section class="section" id="tech" aria-label="Technology Stack" style="background: var(--color-navy-900);">
+
+        <div class="section-inner">
+
+            <div class="section-header fade-in">
+
+                <span class="section-label">Technology Stack</span>
+
+                <h2 class="section-title">Technologies We Work With</h2>
+
+            </div>
+
+            <div class="tech-grid">
+
+                <div class="tech-item fade-in fade-in-delay-1"><span class="tech-item-icon" aria-hidden="true">☁️</span><span class="tech-item-name">Microsoft Azure</span></div>
+
+                <div class="tech-item fade-in fade-in-delay-1"><span class="tech-item-icon" aria-hidden="true">📧</span><span class="tech-item-name">Microsoft 365</span></div>
+
+                <div class="tech-item fade-in fade-in-delay-2"><span class="tech-item-icon" aria-hidden="true">🔌</span><span class="tech-item-name">Power Platform</span></div>
+
+                <div class="tech-item fade-in fade-in-delay-2"><span class="tech-item-icon" aria-hidden="true">💻</span><span class="tech-item-name">PowerShell</span></div>
+
+                <div class="tech-item fade-in fade-in-delay-3"><span class="tech-item-icon" aria-hidden="true">🖥️</span><span class="tech-item-name">Windows Server</span></div>
+
+                <div class="tech-item fade-in fade-in-delay-3"><span class="tech-item-icon" aria-hidden="true">📁</span><span class="tech-item-name">Active Directory</span></div>
+
+                <div class="tech-item fade-in fade-in-delay-4"><span class="tech-item-icon" aria-hidden="true">🔐</span><span class="tech-item-name">Entra ID</span></div>
+
+                <div class="tech-item fade-in fade-in-delay-4"><span class="tech-item-icon" aria-hidden="true">🗄️</span><span class="tech-item-name">SQL</span></div>
+
+                <div class="tech-item fade-in fade-in-delay-1"><span class="tech-item-icon" aria-hidden="true">🐍</span><span class="tech-item-name">Python</span></div>
+
+                <div class="tech-item fade-in fade-in-delay-2"><span class="tech-item-icon" aria-hidden="true">📜</span><span class="tech-item-name">JavaScript</span></div>
+
+                <div class="tech-item fade-in fade-in-delay-3"><span class="tech-item-icon" aria-hidden="true">🧠</span><span class="tech-item-name">OpenAI</span></div>
+
+                <div class="tech-item fade-in fade-in-delay-4"><span class="tech-item-icon" aria-hidden="true">🔮</span><span class="tech-item-name">Anthropic</span></div>
+
+                <div class="tech-item fade-in fade-in-delay-1"><span class="tech-item-icon" aria-hidden="true">🐙</span><span class="tech-item-name">GitHub</span></div>
+
+                <div class="tech-item fade-in fade-in-delay-2"><span class="tech-item-icon" aria-hidden="true">🐳</span><span class="tech-item-name">Docker</span></div>
+
+                <div class="tech-item fade-in fade-in-delay-3"><span class="tech-item-icon" aria-hidden="true">🔗</span><span class="tech-item-name">REST APIs</span></div>
+
+                <div class="tech-item fade-in fade-in-delay-4"><span class="tech-item-icon" aria-hidden="true">☁️</span><span class="tech-item-name">Cloud Technologies</span></div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ============================================
+
+         TESTIMONIALS
+
+         ============================================ -->
+
+    <section class="section" id="testimonials" aria-label="Testimonials">
+
+        <div class="section-inner">
+
+            <div class="section-header fade-in">
+
+                <span class="section-label">Testimonials</span>
+
+                <h2 class="section-title">Trusted by Technology Leaders</h2>
+
+                <p class="section-subtitle">What clients and partners say about working with Woven Model.</p>
+
+            </div>
+
+            <div class="testimonials-grid">
+
+                <div class="testimonial-card fade-in fade-in-delay-1">
+
+                    <div class="testimonial-quote" aria-hidden="true">"</div>
+
+                    <p class="testimonial-text">
+
+                        Woven Model transformed our approach to AI integration. The role-based knowledge platform they built has fundamentally changed how our teams access and apply institutional knowledge.
+
+                    </p>
+
+                    <div class="testimonial-author">
+
+                        <div class="testimonial-avatar" aria-hidden="true">JD</div>
+
+                        <div>
+
+                            <div class="testimonial-name">James Donovan</div>
+
+                            <div class="testimonial-role">CTO, Enterprise Healthcare Solutions</div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="testimonial-card fade-in fade-in-delay-2">
+
+                    <div class="testimonial-quote" aria-hidden="true">"</div>
+
+                    <p class="testimonial-text">
+
+                        Their security assessment was thorough, practical, and immediately actionable. We identified critical gaps and had a clear remediation roadmap within weeks.
+
+                    </p>
+
+                    <div class="testimonial-author">
+
+                        <div class="testimonial-avatar" aria-hidden="true">SR</div>
+
+                        <div>
+
+                            <div class="testimonial-name">Sarah Reynolds</div>
+
+                            <div class="testimonial-role">VP of IT, Mid-Atlantic Financial Group</div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="testimonial-card fade-in fade-in-delay-3">
+
+                    <div class="testimonial-quote" aria-hidden="true">"</div>
+
+                    <p class="testimonial-text">
+
+                        The automation suite Woven Model built eliminated hundreds of hours of manual work per month. The ROI was evident within the first quarter of deployment.
+
+                    </p>
+
+                    <div class="testimonial-author">
+
+                        <div class="testimonial-avatar" aria-hidden="true">MK</div>
+
+                        <div>
+
+                            <div class="testimonial-name">Marcus Kim</div>
+
+                            <div class="testimonial-role">Director of Operations, LogiTech Transport</div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ============================================
+
+         BLOG SECTION
+
+         ============================================ -->
+
+    <section class="section" id="blog" aria-label="Insights & Articles" style="background: var(--color-navy-900);">
+
+        <div class="section-inner">
+
+            <div class="section-header fade-in">
+
+                <span class="section-label">Insights</span>
+
+                <h2 class="section-title">Latest Thinking</h2>
+
+                <p class="section-subtitle">Perspectives on AI, automation, security, and enterprise technology.</p>
+
+            </div>
+
+            <div class="blog-grid">
+
+                <div class="blog-card fade-in fade-in-delay-1">
+
+                    <div class="blog-thumb" aria-hidden="true">🤖</div>
+
+                    <div class="blog-body">
+
+                        <div class="blog-date">Strategy</div>
+
+                        <h4>How AI Is Transforming Business Operations</h4>
+
+                        <a href="blog/how-ai-is-transforming-business-operations.html"" class="blog-link">Read Article <span aria-hidden="true">→</span></a>
+
+                    </div>
+
+                </div>
+
+                <div class="blog-card fade-in fade-in-delay-2">
+
+                    <div class="blog-thumb" aria-hidden="true">🛡️</div>
+
+                    <div class="blog-body">
+
+                        <div class="blog-date">Security</div>
+
+                        <h4>Security Reviews Every Organization Should Perform</h4>
+
+                        <a href="blog/security-reviews-every-organization-should-perform.html"" class="blog-link">Read Article <span aria-hidden="true">→</span></a>
+
+                    </div>
+
+                </div>
+
+                <div class="blog-card fade-in fade-in-delay-3">
+
+                    <div class="blog-thumb" aria-hidden="true">☁️</div>
+
+                    <div class="blog-body">
+
+                        <div class="blog-date">Infrastructure</div>
+
+                        <h4>Modernizing Infrastructure with Azure</h4>
+
+                        <a href="blog/modernizing-infrastructure-with-azure.html"" class="blog-link">Read Article <span aria-hidden="true">→</span></a>
+
+                    </div>
+
+                </div>
+
+                <div class="blog-card fade-in fade-in-delay-4">
+
+                    <div class="blog-thumb" aria-hidden="true">⚡</div>
+
+                    <div class="blog-body">
+
+                        <div class="blog-date">Automation</div>
+
+                        <h4>Automation Opportunities Most Businesses Miss</h4>
+
+                        <a href="blog/automation-opportunities-most-businesses-miss.html"" class="blog-link">Read Article <span aria-hidden="true">→</span></a>
+
+                    </div>
+
+                </div>
+
+                <div class="blog-card fade-in fade-in-delay-1">
+
+                    <div class="blog-thumb" aria-hidden="true">💻</div>
+
+                    <div class="blog-body">
+
+                        <div class="blog-date">Development</div>
+
+                        <h4>Building Secure Enterprise Applications</h4>
+
+                        <a href="blog/building-secure-enterprise-applications.html"" class="blog-link">Read Article <span aria-hidden="true">→</span></a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ============================================
+
+         CONTACT SECTION
+
+         ============================================ -->
+
+    <section class="section" id="contact" aria-label="Contact & Consultation">
+
+        <div class="section-inner">
+
+            <div class="contact-grid">
+
+                <div class="contact-info fade-in">
+
+                    <span class="section-label">Contact</span>
+
+                    <h2>Let's Build Something Intelligent</h2>
+
+                    <p>Whether you're exploring AI, automation, cybersecurity improvements, or custom software, let's discuss your goals.</p>
+
+                    <div class="contact-details">
+
+                        <div class="contact-detail">
+
+                            <div class="contact-detail-icon" aria-hidden="true">✉️</div>
+
+                            <span>jude@wovenmodel.com</span>
+
+                        </div>
+
+                        <div class="contact-detail">
+
+                            <div class="contact-detail-icon" aria-hidden="true">📍</div>
+
+                            <span>Available for remote & on-site engagements</span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="contact-form-wrapper fade-in fade-in-delay-2">
+
+                    <form id="contact-form" action="https://formsubmit.co/sales@wovenmodel.com" method="POST" novalidate>
+
+                        <!-- Honeypot to prevent spam -->
+
+                        <input type="text" name="_honey" style="display:none">
+
+                        <!-- Disable captcha -->
+
+                        <input type="hidden" name="_captcha" value="false">
+
+                        <!-- Redirect back after submit -->
+
+                        <input type="hidden" name="_next" value="https://wovenmodel.com/#contact">
+
+                        <div class="form-grid">
+
+                            <div class="form-group">
+
+                                <label for="name">Name <span aria-hidden="true">*</span></label>
+
+                                <input type="text" id="name" name="name" placeholder="Your full name" required autocomplete="name">
+
+                                <span class="form-error-text" id="name-error">Please enter your name.</span>
+
+                            </div>
+
+                            <div class="form-group">
+
+                                <label for="company">Company</label>
+
+                                <input type="text" id="company" name="company" placeholder="Your company name" autocomplete="organization">
+
+                            </div>
+
+                            <div class="form-group">
+
+                                <label for="email">Email <span aria-hidden="true">*</span></label>
+
+                                <input type="email" id="email" name="email" placeholder="your@email.com" required autocomplete="email">
+
+                                <span class="form-error-text" id="email-error">Please enter a valid email address.</span>
+
+                            </div>
+
+                            <div class="form-group">
+
+                                <label for="phone">Phone</label>
+
+                                <input type="tel" id="phone" name="phone" placeholder="+1 (555) 000-0000" autocomplete="tel">
+
+                            </div>
+
+                            <div class="form-group full">
+
+                                <label for="project-type">Project Type</label>
+
+                                <select id="project-type" name="project-type">
+
+                                    <option value="">Select a project type...</option>
+
+                                    <option value="ai-solutions">AI Solutions</option>
+
+                                    <option value="custom-software">Custom Software Development</option>
+
+                                    <option value="business-automation">Business Automation</option>
+
+                                    <option value="cybersecurity">Cybersecurity Review</option>
+
+                                    <option value="enterprise-consulting">Enterprise Technology Consulting</option>
+
+                                    <option value="other">Other / Multiple Services</option>
+
+                                </select>
+
+                            </div>
+
+                            <div class="form-group full">
+
+                                <label for="message">Message <span aria-hidden="true">*</span></label>
+
+                                <textarea id="message" name="message" placeholder="Tell me about your project, goals, and timeline..." required></textarea>
+
+                                <span class="form-error-text" id="message-error">Please enter your message.</span>
+
+                            </div>
+
+                        </div>
+
+                        <div class="form-submit-row">
+
+                            <button type="submit" class="btn btn-primary" id="form-submit-btn">Request Consultation</button>
+
+                        </div>
+
+                        <div class="form-success" id="form-success">
+
+                            <div class="form-success-icon" aria-hidden="true">✅</div>
+
+                            <h3>Thank You!</h3>
+
+                            <p>Your consultation request has been received. I'll get back to you within 24 hours.</p>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    </main>
+
+
+
+    <!-- ============================================
+
+         FOOTER
+
+         ============================================ -->
+
+    <footer class="footer" role="contentinfo">
+
+        <div class="footer-inner">
+
+            <div class="footer-brand">
+
+                <h4>Woven Model</h4>
+
+                <p>Building Intelligent Systems That Scale</p>
+
+                <div class="footer-social">
+
+                    <a href="https://linkedin.com" aria-label="LinkedIn" target="_blank" rel="noopener noreferrer" title="LinkedIn">🔗</a>
+
+                    <a href="https://github.com" aria-label="GitHub" target="_blank" rel="noopener noreferrer" title="GitHub">💻</a>
+
+                    <a href="mailto:jude@wovenmodel.com" aria-label="Email Jude Yearwood" title="Email">✉️</a>
+
+                </div>
+
+            </div>
+
+            <div class="contact-details" style="margin-top: 1.5rem;">
+
+                <a href="https://calendar.app.google/VcNdH476r22az1kj7" class="btn btn-primary" target="_blank" rel="noopener noreferrer" style="width:100%; justify-content:center; padding:0.9rem; font-size:1rem;">
+
+                    📅 Book a Meeting
+
+                </a>
+
+            </div>
+
+            <div class="footer-links">
+
+                <h4>Navigation</h4>
+
+                <ul>
+
+                    <li><a href="#about">About</a></li>
+
+                    <li><a href="#services">Services</a></li>
+
+                    <li><a href="#products">Products</a></li>
+
+                    <li><a href="#projects">Projects</a></li>
+
+                    <li><a href="#contact">Contact</a></li>
+
+                </ul>
+
+            </div>
+
+            <div class="footer-links">
+
+                <h4>Services</h4>
+
+                <ul>
+
+                    <li><a href="#services">AI Solutions</a></li>
+
+                    <li><a href="#services">Software Development</a></li>
+
+                    <li><a href="#services">Automation</a></li>
+
+                    <li><a href="#services">Cybersecurity</a></li>
+
+                </ul>
+
+            </div>
+
+        </div>
+
+        <div class="footer-bottom">
+
+            <p>&copy; <span id="current-year"></span> Woven Model. All rights reserved. | Jude Yearwood, Founder</p>
+
+        </div>
+
+    </footer>
+
+
+
+    <!-- ============================================
+
+         JAVASCRIPT
+
+         ============================================ -->
+
+    <script>
+
+        /* ============================================
+
+           CURRENT YEAR
+
+           ============================================ */
+
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+
+
+
+        /* ============================================
+
+           NAVIGATION SCROLL EFFECT
+
+           ============================================ */
+
+        const navbar = document.getElementById('navbar');
+
+        const navToggle = document.getElementById('nav-toggle');
+
+        const navLinks = document.getElementById('nav-links');
+
+        const navOverlay = document.getElementById('nav-overlay');
+
+
+
+        function updateNav() {
+
+            if (window.scrollY > 50) {
+
+                navbar.classList.add('scrolled');
+
+            } else {
+
+                navbar.classList.remove('scrolled');
+
+            }
+
+        }
+
+        window.addEventListener('scroll', updateNav, { passive: true });
+
+        updateNav();
+
+
+
+        /* ============================================
+
+           MOBILE MENU TOGGLE
+
+           ============================================ */
+
+        function closeMenu() {
+
+            navToggle.classList.remove('active');
+
+            navLinks.classList.remove('active');
+
+            navOverlay.classList.remove('active');
+
+            navToggle.setAttribute('aria-expanded', 'false');
+
+            document.body.style.overflow = '';
+
+        }
+
+
+
+        function toggleMenu() {
+
+            const isOpen = navLinks.classList.contains('active');
+
+            if (isOpen) {
+
+                closeMenu();
+
+            } else {
+
+                navToggle.classList.add('active');
+
+                navLinks.classList.add('active');
+
+                navOverlay.classList.add('active');
+
+                navToggle.setAttribute('aria-expanded', 'true');
+
+                document.body.style.overflow = 'hidden';
+
+            }
+
+        }
+
+
+
+        navToggle.addEventListener('click', toggleMenu);
+
+        navOverlay.addEventListener('click', closeMenu);
+
+
+
+        // Close menu when a nav link is clicked
+
+        navLinks.querySelectorAll('a').forEach(link => {
+
+            link.addEventListener('click', () => {
+
+                if (navLinks.classList.contains('active')) {
+
+                    closeMenu();
+
+                }
+
+            });
+
+        });
+
+
+
+        /* ============================================
+
+           SCROLL ANIMATIONS (Intersection Observer)
+
+           ============================================ */
+
+        const fadeElements = document.querySelectorAll('.fade-in');
+
+        const observerOptions = {
+
+            root: null,
+
+            rootMargin: '0px 0px -60px 0px',
+
+            threshold: 0.1
+
+        };
+
+
+
+        const observer = new IntersectionObserver((entries) => {
+
+            entries.forEach(entry => {
+
+                if (entry.isIntersecting) {
+
+                    entry.target.classList.add('visible');
+
+                    observer.unobserve(entry.target);
+
+                }
+
+            });
+
+        }, observerOptions);
+
+
+
+        fadeElements.forEach(el => observer.observe(el));
+
+
+
+        /* ============================================
+
+           BOOKING CONFIGURATION
+
+           Centralized URL — update here to change all booking links.
+
+           ============================================ */
+
+        const GOOGLE_BOOKING_URL = 'https://calendar.app.google/VcNdH476r22az1kj7';
+
+
+
+        /* ============================================
+
+           CONTACT FORM VALIDATION
+
+           ============================================ */
+
+        const form = document.getElementById('contact-form');
+
+        const formSuccess = document.getElementById('form-success');
+
+        const submitBtn = document.getElementById('form-submit-btn');
+
+
+
+        function showError(fieldId, errorId) {
+
+            document.getElementById(fieldId).classList.add('error');
+
+            document.getElementById(errorId).classList.add('visible');
+
+        }
+
+
+
+        function clearError(fieldId, errorId) {
+
+            document.getElementById(fieldId).classList.remove('error');
+
+            document.getElementById(errorId).classList.remove('visible');
+
+        }
+
+
+
+        function clearAllErrors() {
+
+            ['name', 'email', 'message'].forEach(f => {
+
+                document.getElementById(f).classList.remove('error');
+
+                document.getElementById(f + '-error').classList.remove('visible');
+
+            });
+
+        }
+
+
+
+        function validateEmail(email) {
+
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+        }
+
+
+
+        form.addEventListener('submit', (e) => {
+
+            e.preventDefault();
+
+            clearAllErrors();
+
+            let valid = true;
+
+
+
+            const name = document.getElementById('name').value.trim();
+
+            const email = document.getElementById('email').value.trim();
+
+            const message = document.getElementById('message').value.trim();
+
+
+
+            if (!name) {
+
+                showError('name', 'name-error');
+
+                valid = false;
+
+            }
+
+            if (!email || !validateEmail(email)) {
+
+                showError('email', 'email-error');
+
+                valid = false;
+
+            }
+
+            if (!message) {
+
+                showError('message', 'message-error');
+
+                valid = false;
+
+            }
+
+
+
+            if (valid) {
+
+                submitBtn.disabled = true;
+
+                submitBtn.textContent = 'Sending...';
+
+
+
+                // Collect form data
+
+                const formData = new FormData(form);
+
+
+
+                // Send to FormSubmit.co — forwards to sales@wovenmodel.com
+
+                fetch('https://formsubmit.co/ajax/sales@wovenmodel.com', {
+
+                    method: 'POST',
+
+                    body: formData
+
+                })
+
+                .then(response => response.json())
+
+                .then(data => {
+
+                    if (data.success) {
+
+                        form.style.display = 'none';
+
+                        formSuccess.classList.add('visible');
+
+                        formSuccess.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+                    } else {
+
+                        alert('There was an error sending your message. Please email us directly at sales@wovenmodel.com.');
+
+                        submitBtn.disabled = false;
+
+                        submitBtn.textContent = 'Request Consultation';
+
+                    }
+
+                })
+
+                .catch(() => {
+
+                    alert('There was an error sending your message. Please email us directly at sales@wovenmodel.com.');
+
+                    submitBtn.disabled = false;
+
+                    submitBtn.textContent = 'Request Consultation';
+
+                });
+
+            }
+
+        });
+
+
+
+        // Real-time error clearing
+
+        ['name', 'email', 'message'].forEach(fieldId => {
+
+            document.getElementById(fieldId).addEventListener('input', () => {
+
+                clearError(fieldId, fieldId + '-error');
+
+            });
+
+        });
+
+
+
+        /* ============================================
+
+           KEYBOARD ACCESSIBILITY: ESC closes menu
+
+           ============================================ */
+
+        document.addEventListener('keydown', (e) => {
+
+            if (e.key === 'Escape' && navLinks.classList.contains('active')) {
+
+                closeMenu();
+
+                navToggle.focus();
+
+            }
+
+        });
+
+
+
+        /* ============================================
+
+           PRODUCT CAROUSEL
+
+           ============================================ */
+
+        (function() {
+
+            const track = document.getElementById('carousel-track');
+
+            const prevBtn = document.getElementById('carousel-prev');
+
+            const nextBtn = document.getElementById('carousel-next');
+
+            const dots = document.querySelectorAll('.carousel-dot');
+
+            if (!track || !prevBtn || !nextBtn || !dots.length) return;
+
+
+
+            const slides = track.querySelectorAll('.carousel-slide');
+
+            let current = 0;
+
+            const total = slides.length;
+
+
+
+            function goTo(index) {
+
+                if (index < 0) index = total - 1;
+
+                if (index >= total) index = 0;
+
+                current = index;
+
+                track.style.transform = 'translateX(-' + (current * 100) + '%)';
+
+                dots.forEach((dot, i) => {
+
+                    dot.classList.toggle('active', i === current);
+
+                });
+
+            }
+
+
+
+            prevBtn.addEventListener('click', function() { goTo(current - 1); });
+
+            nextBtn.addEventListener('click', function() { goTo(current + 1); });
+
+
+
+            dots.forEach(function(dot) {
+
+                dot.addEventListener('click', function() {
+
+                    goTo(parseInt(this.getAttribute('data-index')));
+
+                });
+
+            });
+
+
+
+            // Keyboard navigation within carousel
+
+            const carousel = document.querySelector('.products-carousel');
+
+            if (carousel) {
+
+                carousel.addEventListener('keydown', function(e) {
+
+                    if (e.key === 'ArrowLeft') { e.preventDefault(); goTo(current - 1); }
+
+                    if (e.key === 'ArrowRight') { e.preventDefault(); goTo(current + 1); }
+
+                });
+
+                carousel.setAttribute('tabindex', '0');
+
+                carousel.setAttribute('role', 'region');
+
+                carousel.setAttribute('aria-label', 'Product carousel');
+
+            }
+
+        })();
+
+    </script>
+
+</body>
+
+</html>

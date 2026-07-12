@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" type="image/svg+xml" href="../favicon.ico">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Security Reviews Every Organization Should Perform | Woven Model</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+            :root {
+            --color-navy-950: #0a0f1e; --color-navy-900: #0d1428; --color-navy-800: #111b36;
+            --color-navy-700: #162244; --color-navy-600: #1c2d56; --color-navy-500: #243a6b;
+            --color-cyan-400: #22d3ee; --color-cyan-500: #06b6d4; --color-cyan-600: #0891b2;
+            --color-white: #ffffff; --color-gray-100: #f3f4f6; --color-gray-200: #e5e7eb;
+            --color-gray-300: #d1d5db; --color-gray-400: #9ca3af; --color-gray-500: #6b7280;
+            --color-gray-600: #4b5563; --color-gray-700: #374151;
+            --glass-bg: rgba(17, 27, 54, 0.6); --glass-border: rgba(34, 211, 238, 0.15);
+            --glass-shadow: 0 8px 32px rgba(0,0,0,0.4); --glass-blur: blur(16px);
+            --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            --max-width: 800px;
+        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--color-navy-950);
+            color: var(--color-gray-300);
+            line-height: 1.8;
+            -webkit-font-smoothing: antialiased;
+        }
+        .container { max-width: var(--max-width); margin: 0 auto; padding: 0 1.5rem; }
+        .nav {
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--glass-border);
+            margin-bottom: 3rem;
+        }
+        .nav-inner { display: flex; align-items: center; justify-content: space-between; }
+        .nav-logo { font-weight: 700; font-size: 1.2rem; color: var(--color-white); text-decoration: none; }
+        .nav-links { display: flex; gap: 1.5rem; }
+        .nav-links a { color: var(--color-gray-400); text-decoration: none; font-size: 0.9rem; transition: color 150ms; }
+        .nav-links a:hover { color: var(--color-cyan-400); }
+        .category-badge {
+            display: inline-block;
+            background: rgba(6,182,212,0.1); border: 1px solid var(--glass-border);
+            border-radius: 50px; padding: 0.3rem 0.8rem;
+            font-size: 0.75rem; font-weight: 600; color: var(--color-cyan-400);
+            text-transform: uppercase; letter-spacing: 0.05em;
+            margin-bottom: 1rem;
+        }
+        h1 { font-size: clamp(2rem, 4vw, 2.8rem); color: var(--color-white); line-height: 1.2; margin-bottom: 0.75rem; }
+        .meta { color: var(--color-gray-500); font-size: 0.85rem; margin-bottom: 2rem; }
+        h2 { font-size: 1.5rem; color: var(--color-white); margin: 2.5rem 0 1rem; }
+        h3 { font-size: 1.15rem; color: var(--color-white); margin: 1.5rem 0 0.75rem; }
+        p { margin-bottom: 1rem; }
+        ul, ol { margin: 1rem 0 1rem 1.5rem; }
+        li { margin-bottom: 0.5rem; }
+        .highlight-box {
+            background: var(--glass-bg); backdrop-filter: var(--glass-blur);
+            border: 1px solid var(--glass-border); border-radius: 12px;
+            padding: 1.5rem; margin: 1.5rem 0;
+        }
+        .highlight-box .stat { font-size: 1.8rem; font-weight: 800; color: var(--color-cyan-400); }
+        .takeaways {
+            background: rgba(34,211,238,0.05); border: 1px solid var(--glass-border);
+            border-radius: 12px; padding: 1.5rem; margin: 2rem 0;
+        }
+        .takeaways h3 { margin-top: 0; }
+        .takeaways li { color: var(--color-gray-200); }
+        .sources {
+            border-top: 1px solid var(--glass-border); padding-top: 1.5rem;
+            margin-top: 2rem; font-size: 0.85rem; color: var(--color-gray-500);
+        }
+        .sources a { color: var(--color-cyan-400); }
+        .cta-section {
+            text-align: center; padding: 3rem 0; margin-top: 3rem;
+            border-top: 1px solid var(--glass-border);
+        }
+        .cta-btn {
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            background: linear-gradient(135deg, var(--color-cyan-500), var(--color-cyan-600));
+            color: var(--color-navy-950); padding: 0.8rem 2rem; border-radius: 10px;
+            font-weight: 600; font-size: 0.95rem; text-decoration: none;
+            transition: all 150ms;
+        }
+        .cta-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 28px rgba(6,182,212,0.4); }
+        .footer { text-align: center; padding: 2rem 0; color: var(--color-gray-600); font-size: 0.85rem; border-top: 1px solid var(--glass-border); margin-top: 2rem; }
+        @media (max-width: 600px) { .nav-inner { flex-direction: column; gap: 1rem; } }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <nav class="nav">
+            <div class="nav-inner">
+                <a href="../index.html" class="nav-logo">Woven Model</a>
+                <div class="nav-links">
+                    <a href="../index.html">Home</a>
+                    <a href="../index.html#services">Services</a>
+                    <a href="../index.html#products">Products</a>
+                    <a href="../index.html#blog">Blog</a>
+                    <a href="../index.html#contact">Contact</a>
+                </div>
+            </div>
+        </nav>
+
+<div class="container">
+
+    <div class="article-header">
+        <span class="category-badge">Security</span>
+        <h1>Security Reviews Every Organization Should Perform</h1>
+        <p class="meta">Published July 11, 2026 &bull; 10 min read</p>
+    </div>
+
+    <div class="article-content">
+
+        <p>
+            The volume and sophistication of cyber threats continue to escalate at an alarming rate. According to the Verizon 2025 Data Breach Investigations Report (DBIR), the number of confirmed breaches reached a record 12,195 &mdash; a stark reminder that no organization is immune. For enterprise decision-makers, the question is no longer <em>if</em> a breach will occur but <em>when</em>, and how quickly the organization can detect and respond. The answer lies in a disciplined, recurring program of security reviews grounded in established frameworks. This article outlines the core frameworks every organization should know, the most common vulnerabilities to look for, and a practical cadence for building a resilient audit program.
+        </p>
+
+        <!-- ============================================ -->
+        <h2>Understanding the Leading Security Frameworks</h2>
+
+        <p>
+            A mature security program does not start from scratch. It leverages globally recognized frameworks that codify decades of collective experience. Three frameworks stand out as essential reference points for organizations of any size: the NIST Cybersecurity Framework (CSF), ISO 27001:2022, and the CIS Critical Security Controls v8.
+        </p>
+
+        <h3>NIST Cybersecurity Framework (CSF) 2.0</h3>
+        <p>
+            Published by the U.S. National Institute of Standards and Technology, the CSF provides a common language for managing cybersecurity risk. Its six core functions &mdash; Govern, Identify, Protect, Detect, Respond, and Recover &mdash; give organizations a holistic view of their security posture. The framework is widely adopted across sectors including energy, finance, healthcare, and critical infrastructure. Its flexible, outcome-driven approach allows organizations to tailor controls to their specific risk appetite without prescribing rigid technical implementations.
+        </p>
+        <p>
+            In February 2024, NIST released version 2.0, adding the "Govern" function to emphasise that cybersecurity is not merely a technical concern but a governance priority that demands board-level attention (NIST, 2024).
+        </p>
+
+        <h3>ISO 27001:2022</h3>
+        <p>
+            ISO 27001 is the international standard for information security management systems (ISMS). The 2022 revision aligned its controls with modern threats, consolidating 114 controls into four thematic domains: organisational, people, physical, and technological. Certification to ISO 27001 is often a contractual requirement for enterprise vendors, particularly in the European market, and provides third-party assurance that security is managed systematically rather than reactively.
+        </p>
+
+        <h3>CIS Controls v8</h3>
+        <p>
+            The Center for Internet Security (CIS) Controls v8 distills real-world attack data into 18 prioritized safeguards, from inventory and control of enterprise assets to penetration testing and incident response. Because the controls are ranked by effectiveness, organizations with limited budgets can start with the "Implementation Group 1" subset and progressively mature. The CIS Controls map directly to both NIST CSF and ISO 27001, making them an excellent tactical bridge between strategic frameworks and day-to-day operations.
+        </p>
+
+        <!-- ============================================ -->
+        <h2>The Most Common Vulnerabilities Found in Reviews</h2>
+
+        <p>
+            The Verizon 2025 DBIR paints a sobering picture of how breaches actually happen. The report found that 22% of all breaches involved credential abuse (stolen or weak passwords), while 20% stemmed from exploitation of unpatched software vulnerabilities. Together, these two vectors account for nearly half of all incidents. Below are the vulnerabilities that repeatedly surface in security reviews.
+        </p>
+
+        <div class="highlight-box">
+            <span class="stat">22%</span>
+            <p><strong>of breaches involve credential abuse</strong></p>
+            <p style="font-size:0.95rem;color:var(--text-muted);">Verizon 2025 DBIR</p>
+        </div>
+
+        <div class="highlight-box">
+            <span class="stat">20%</span>
+            <p><strong>of breaches stem from vulnerability exploitation</strong></p>
+            <p style="font-size:0.95rem;color:var(--text-muted);">Verizon 2025 DBIR</p>
+        </div>
+
+        <h3>Unpatched Systems</h3>
+        <p>
+            Despite decades of patch-management guidance, the 2025 DBIR found that exploit-based breaches continue to rise, driven by ransomware groups that weaponize known vulnerabilities within hours of a patch being released. Organizations that lack an automated patch program often remain exposed for weeks or months after a CVE is published.
+        </p>
+
+        <h3>Misconfigured Cloud Storage</h3>
+        <p>
+            Cloud misconfiguration remains a leading cause of data exposure. The 2025 DBIR noted that more than 85% of web application breaches involved misconfigured resources, with S3 buckets, Azure Blob Storage, and database instances left publicly accessible due to overly permissive IAM policies or default settings.
+        </p>
+
+        <h3>Phishing and Social Engineering</h3>
+        <p>
+            Phishing continues to be the primary entry vector for credential theft. Modern attacks bypass traditional filters using business email compromise (BEC) and multi-stage lures. The DBIR reports that the median time for a user to fall for a phishing email is under 60 seconds, making user awareness training and simulated phishing campaigns essential components of any review program.
+        </p>
+
+        <h3>Third-Party and Supply Chain Risk</h3>
+        <p>
+            In 2024, supply-chain attacks accounted for a growing share of breaches. Attackers target vendors with weaker security to gain a foothold inside larger enterprises. The SolarWinds and MOVEit incidents demonstrated that a single vulnerable third-party component can compromise hundreds of downstream organizations. Security reviews must therefore extend beyond the enterprise perimeter to assess vendor security postures.
+        </p>
+
+        <!-- ============================================ -->
+        <h2>Recommended Review Cadence</h2>
+
+        <p>
+            Security reviews must be conducted on a regular, defensible schedule. A once-a-year audit is no longer sufficient given the speed of the threat landscape. The following cadence reflects industry best practice as recommended by the CIS Controls v8 and NIST CSF guidance:
+        </p>
+
+        <ul>
+            <li><strong>Monthly vulnerability scans:</strong> Automated scanning of all internet-facing assets and internal network segments to detect missing patches, weak cipher configurations, and known CVEs. Scans should be authenticated where possible to reduce false positives and should include both network-layer and application-layer assessment.</li>
+            <li><strong>Quarterly penetration tests:</strong> Manual or hybrid penetration tests that go beyond automated scanning to simulate real attacker behavior. These should cover web applications, APIs, cloud infrastructure, and internal lateral-movement scenarios. CIS Control 18 (Penetration Testing) explicitly recommends at least quarterly testing for high-maturity organizations.</li>
+            <li><strong>Annual full audits:</strong> A comprehensive review that maps every control against the selected framework (NIST CSF, ISO 27001, or CIS v8). The annual audit should include policy review, evidence collection, interviews with control owners, and a formal risk register update. This is also the appropriate time to conduct tabletop incident-response exercises and review third-party risk assessments.</li>
+        </ul>
+
+        <p>
+            In addition, organizations should implement continuous monitoring capabilities (SIEM, endpoint detection and response, cloud security posture management) to bridge the gaps between scheduled reviews. Continuous monitoring does not replace manual reviews but provides early warning when a control fails.
+        </p>
+
+        <!-- ============================================ -->
+        <h2>Building an Audit Program That Scales</h2>
+
+        <p>
+            Establishing a security review program does not require a massive budget, but it does require executive sponsorship and a methodical approach. The following steps can help any organization get started:
+        </p>
+
+        <h3>1. Select a Primary Framework</h3>
+        <p>
+            Choose one framework as your anchor. For most organizations, NIST CSF 2.0 provides the best balance of comprehensiveness and flexibility. If compliance or customer demands require certification, ISO 27001 may be the better starting point. Use the CIS Controls v8 as your implementation roadmap because its controls are prescriptive and measurable.
+        </p>
+
+        <h3>2. Perform a Baseline Risk Assessment</h3>
+        <p>
+            Before you can improve, you must understand your current state. A baseline assessment using the chosen framework will identify the most critical gaps. Focus first on the controls that address the vulnerabilities mentioned above: credential management (MFA, password policies), patch management, cloud configuration, and phishing defences.
+        </p>
+
+        <h3>3. Assign Ownership and Build Accountability</h3>
+        <p>
+            Every control needs an owner. Assign responsibility for each control family to a specific team or individual. Use a governance, risk, and compliance (GRC) tool or a simple spreadsheet to track control status, remediation plans, and due dates. Report findings to the board or risk committee at least quarterly.
+        </p>
+
+        <h3>4. Automate Where Possible</h3>
+        <p>
+            Manual review is time-consuming and error-prone. Invest in automation for vulnerability scanning, configuration drift detection, user access reviews, and evidence collection. Automation frees the security team to focus on analysis, remediation, and strategic improvement rather than data gathering.
+        </p>
+
+        <h3>5. Treat Security Reviews as a Continuous Process</h3>
+        <p>
+            A security review is not a project with an end date. It is a recurring cycle &mdash; assess, remediate, verify, and improve. Each review should produce a prioritized action plan, and each subsequent review should confirm that previous findings have been resolved. Over time, the organization develops an institutional memory that makes each review faster and more effective.
+        </p>
+
+        <!-- ============================================ -->
+        <div class="takeaways">
+            <h3>Key Takeaways</h3>
+            <ul>
+                <li>The Verizon 2025 DBIR recorded 12,195 confirmed breaches; credential abuse (22%) and vulnerability exploitation (20%) are the top attack patterns.</li>
+                <li>Three authoritative frameworks &mdash; NIST CSF 2.0, ISO 27001:2022, and CIS Controls v8 &mdash; provide structured approaches for security reviews at any maturity level.</li>
+                <li>Common vulnerabilities found in reviews include unpatched systems, misconfigured cloud storage, phishing, and third-party risk; each can be addressed with targeted controls.</li>
+                <li>Industry best practice recommends monthly vulnerability scans, quarterly penetration tests, and annual full audits supplemented by continuous monitoring.</li>
+                <li>Building a scalable audit program starts with selecting one primary framework, performing a baseline assessment, assigning control ownership, automating repetitious tasks, and establishing a continuous improvement cycle.</li>
+            </ul>
+        </div>
+
+        <!-- ============================================ -->
+        <div class="cta-section">
+            <p>
+                Is your organization ready for its next security review? Our team of certified security assessors can help you build a review program that meets regulatory requirements and reduces real-world risk.
+            </p>
+            <a class="cta-btn" href="../index.html#contact">Talk to Our Team &#8594;</a>
+        </div>
+
+        <!-- ============================================ -->
+        <div class="sources">
+            <h3>Sources</h3>
+            <ol>
+                <li>
+                    Verizon Business, <em>2025 Data Breach Investigations Report</em>, 2025.
+                    <a href="https://www.verizon.com/business/resources/reports/dbir/" target="_blank" rel="noopener">https://www.verizon.com/business/resources/reports/dbir/</a>
+                </li>
+                <li>
+                    National Institute of Standards and Technology, <em>The NIST Cybersecurity Framework (CSF) 2.0</em>, February 2024.
+                    <a href="https://www.nist.gov/cyberframework" target="_blank" rel="noopener">https://www.nist.gov/cyberframework</a>
+                </li>
+                <li>
+                    International Organization for Standardization, <em>ISO/IEC 27001:2022 Information Security Management Systems</em>, 2022.
+                    <a href="https://www.iso.org/standard/27001" target="_blank" rel="noopener">https://www.iso.org/standard/27001</a>
+                </li>
+                <li>
+                    Center for Internet Security, <em>CIS Critical Security Controls Version 8</em>, 2023.
+                    <a href="https://www.cisecurity.org/controls/v8" target="_blank" rel="noopener">https://www.cisecurity.org/controls/v8</a>
+                </li>
+                <li>
+                    MITRE Corporation, <em>CVE and CWE Programs</em>, accessed 2025.
+                    <a href="https://cve.mitre.org/" target="_blank" rel="noopener">https://cve.mitre.org/</a>
+                </li>
+                <li>
+                    Cybersecurity & Infrastructure Security Agency, <em>Binding Operational Directive 22-01: Reducing the Risk of Known Exploited Vulnerabilities</em>, 2021 (updated 2024).
+                    <a href="https://www.cisa.gov/binding-operational-directive-22-01" target="_blank" rel="noopener">https://www.cisa.gov/binding-operational-directive-22-01</a>
+                </li>
+                <li>
+                    Cloud Security Alliance, <em>Top Threats to Cloud Computing: Egregious Eleven</em>, 2022.
+                    <a href="https://cloudsecurityalliance.org/artifacts/top-threats-to-cloud-computing-egregious-eleven" target="_blank" rel="noopener">https://cloudsecurityalliance.org/artifacts/top-threats-to-cloud-computing-egregious-eleven</a>
+                </li>
+            </ol>
+        </div>
+
+    </div><!-- .article-content -->
+
+</div><!-- .container -->
+
+    <div class="footer">
+            <p>&copy; 2026 Woven Model. All rights reserved.</p>
+        </div>
+    </div>
+
+</body>
+</html>
