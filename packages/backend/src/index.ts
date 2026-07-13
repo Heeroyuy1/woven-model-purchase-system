@@ -82,6 +82,14 @@ app.use('/api/coupons', couponRoutes);
 // Error handler (must be last)
 app.use(errorHandler);
 
+// Serve the frontend storefront (built React app)
+app.use(express.static(path.join(__dirname, '../public')));
+
+// SPA fallback: serve index.html for any non-API route
+app.get('*', (_req, res) => {
+  res.sendFile(path.join(__dirname, '../public/index.html'));
+});
+
 // Start server with error logging
 try {
   app.listen(env.PORT, '0.0.0.0', () => {

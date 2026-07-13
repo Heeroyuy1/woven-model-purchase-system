@@ -22,8 +22,8 @@ function CustomerDetail({ customer }: { customer: Customer }) {
 
   useEffect(() => {
     Promise.all([
-      api.adminGetOrders({ customerId: customer.id, limit: 5 }).then((d: any) => setOrders(d.orders || [])),
-      api.adminGetLicenses({ customerId: customer.id, limit: 5 }).then((d: any) => setLicenses(d || [])),
+      api.adminGetOrders({ customerId: customer.id, limit: '5' }).then((d: any) => setOrders(d.orders || [])),
+      api.getLicenses().then((d: any) => setLicenses(d || [])),
     ]).finally(() => setLoading(false));
   }, [customer.id]);
 
