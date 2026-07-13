@@ -67,6 +67,7 @@ import licenseRoutes from './routes/licenses';
 import adminRoutes from './routes/admin';
 import portalRoutes from './routes/portal';
 import couponRoutes from './routes/coupons';
+import seedRoutes from './routes/seed';
 
 // Routes
 app.use('/api/auth', authRoutes);
@@ -78,6 +79,7 @@ app.use('/api/licenses', licenseRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/portal', portalRoutes);
 app.use('/api/coupons', couponRoutes);
+app.use('/api/seed', seedRoutes);
 
 // Serve the frontend storefront (built React app)
 app.use(express.static(path.join(__dirname, '../public')));
