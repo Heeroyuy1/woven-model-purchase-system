@@ -30,7 +30,7 @@ export default function Navbar() {
 
         {/* Desktop Nav */}
         <div className="hidden md:flex items-center gap-8">
-          <a href="/main-site.html" className="text-gray-300 hover:text-white transition-colors text-sm font-medium">
+          <a href="https://wovenmodel.com" className="text-gray-300 hover:text-white transition-colors text-sm font-medium">
             Home
           </a>
           <Link to="/products" className="text-gray-300 hover:text-white transition-colors text-sm font-medium">
@@ -132,7 +132,7 @@ export default function Navbar() {
       {mobileOpen && (
         <div className="md:hidden bg-navy-900/98 backdrop-blur-xl border-t border-white/10 absolute top-[72px] left-0 w-full">
           <div className="px-4 py-4 space-y-3">
-            <a href="/main-site.html" onClick={() => setMobileOpen(false)} className="block py-2 text-gray-300 hover:text-white font-medium">← Home</a>
+            <a href="https://wovenmodel.com" onClick={() => setMobileOpen(false)} className="block py-2 text-gray-300 hover:text-white font-medium">← Home</a>
             <Link to="/products" onClick={() => setMobileOpen(false)} className="block py-2 text-gray-300 hover:text-white">Products</Link>
             <Link to="/cart" onClick={() => setMobileOpen(false)} className="block py-2 text-gray-300 hover:text-white">Cart ({itemCount()})</Link>
             {isAuthenticated ? (
