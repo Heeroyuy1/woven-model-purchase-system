@@ -149,42 +149,42 @@ export async function processOrder(orderId: string, paymentMethod: string, payme
     },
   });
 
-  // Step 5: Send order confirmation email
-  try {
-    await emailService.sendOrderConfirmation(order.customer.email, {
-      name: `${order.customer.firstName} ${order.customer.lastName}`,
-      orderNumber: order.orderNumber,
-      date: new Date().toISOString().split('T')[0],
-      products: order.items.map(i => ({ name: i.productName, quantity: i.quantity, price: i.unitPrice })),
-      total: order.total,
-    });
-  } catch (error: any) {
-    console.error('[OrderService] Failed to send order confirmation email:', error.message);
-  }
-
-  // Send license delivery email for each license
-  for (const lic of generatedLicenses) {
+  // Step 5: Send emails asynchronously (fire-and-forget) to not block the response
+  setImmediate(async () => {
     try {
-      await emailService.sendLicenseDelivery(order.customer.email, {
-        productName: lic.licenseType,
-        licenseKey: lic.licenseKey,
-        version: '1.0.0',
-        downloadUrl: `https://downloads.wovenmodel.com/${lic.id}`,
-        portalUrl: `${env.FRONTEND_URL || 'http://localhost:5173'}/portal/licenses`,
+      await emailService.sendOrderConfirmation(order.customer.email, {
+        name: `${order.customer.firstName} ${order.customer.lastName}`,
+        orderNumber: order.orderNumber,
+        date: new Date().toISOString().split('T')[0],
+        products: order.items.map(i => ({ name: i.productName, quantity: i.quantity, price: i.unitPrice })),
+        total: order.total,
       });
     } catch (error: any) {
-      console.error('[OrderService] Failed to send license delivery email:', error.message);
+      console.error('[OrderService] Failed to send order confirmation email:', error.message);
     }
-  }
 
-  // Send thank you email
-  try {
-    await emailService.sendThankYou(order.customer.email, {
-      name: `${order.customer.firstName} ${order.customer.lastName}`,
-    });
-  } catch (error: any) {
-    console.error('[OrderService] Failed to send thank you email:', error.message);
-  }
+    for (const lic of generatedLicenses) {
+      try {
+        await emailService.sendLicenseDelivery(order.customer.email, {
+          productName: lic.licenseType,
+          licenseKey: lic.licenseKey,
+          version: '1.0.0',
+          downloadUrl: `https://downloads.wovenmodel.com/${lic.id}`,
+          portalUrl: `${env.FRONTEND_URL || 'http://localhost:5173'}/portal/licenses`,
+        });
+      } catch (error: any) {
+        console.error('[OrderService] Failed to send license delivery email:', error.message);
+      }
+    }
+
+    try {
+      await emailService.sendThankYou(order.customer.email, {
+        name: `${order.customer.firstName} ${order.customer.lastName}`,
+      });
+    } catch (error: any) {
+      console.error('[OrderService] Failed to send thank you email:', error.message);
+    }
+  });
 
   await prisma.orderEvent.create({
     data: {
