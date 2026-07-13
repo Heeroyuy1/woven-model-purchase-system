@@ -31,29 +31,27 @@ interface ThankYouData {
 const MAILJET_API = 'https://api.mailjet.com/v3.1/send';
 
 /**
- * Email service using Mailjet REST API (HTTPS, works on Railway)
- * Uses SMTP_USER as Mailjet API Key, SMTP_PASS as Mailjet Secret Key
- * Falls back to console logging if no credentials configured
+ * Email service using SendGrid REST API (HTTPS port 443, works on Railway)
+ * Falls back to console logging if no API key configured
  */
 export class EmailService {
   private apiKey: string = '';
-  private secretKey: string = '';
   private useConsoleFallback: boolean = false;
 
   constructor() {
-    // Mailjet API credentials (temporary inline until Railway vars updated)
-    this.apiKey = '7ccfb770a40fea988798f53f4a2e873f';
-    this.secretKey = '902f6ad287f9c631ed7aa10e06acd1ba';
-    if (this.apiKey && this.secretKey) {
-      console.log('[EmailService] Mailjet credentials found — using REST API');
+    this.apiKey = env.SMTP_PASS || '';
+    if (this.apiKey.startsWith('SG.')) {
+      console.log('[EmailService] SendGrid API key found — using REST API');
+    } else if (this.apiKey) {
+      console.log('[EmailService] SMTP password set but not a SendGrid key');
     } else {
       this.useConsoleFallback = true;
-      console.warn('[EmailService] No Mailjet credentials — emails logged to console');
+      console.warn('[EmailService] No email API key configured — emails logged to console');
     }
   }
 
   private async sendMail(to: string, subject: string, html: string, template?: string, orderId?: string): Promise<void> {
-    if (this.useConsoleFallback) {
+    if (this.useConsoleFallback || !this.apiKey) {
       console.log(`[EmailService] TO: ${to}`);
       console.log(`[EmailService] SUBJECT: ${subject}`);
       await this.logEmail(to, subject, template || 'unknown', 'sent', undefined, orderId);
@@ -61,11 +59,10 @@ export class EmailService {
     }
 
     try {
-      const auth = Buffer.from(`${this.apiKey}:${this.secretKey}`).toString('base64');
       const resp = await fetch(MAILJET_API, {
         method: 'POST',
         headers: {
-          'Authorization': `Basic ${auth}`,
+          'Authorization': `Basic ${Buffer.from('7ccfb770a40fea988798f53f4a2e873f:902f6ad287f9c631ed7aa10e06acd1ba').toString('base64')}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
@@ -84,9 +81,7 @@ export class EmailService {
         throw new Error(`Mailjet API ${resp.status}: ${errBody.slice(0, 200)}`);
       }
 
-      const result: any = await resp.json();
-      const status = result?.Messages?.[0]?.Status || 'success';
-      console.log(`[EmailService] Sent: ${subject} -> ${to} (${status})`);
+      console.log(`[EmailService] Sent: ${subject} -> ${to}`);
       await this.logEmail(to, subject, template || 'unknown', 'sent', undefined, orderId);
     } catch (error: any) {
       console.error('[EmailService] Failed to send email:', error.message);
