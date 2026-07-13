@@ -1,14 +1,5 @@
-import nodemailer from 'nodemailer';
 import { PrismaClient } from '@prisma/client';
-import dns from 'dns';
 import { env } from '../config/env';
-
-// Resolve SMTP host for local dev DNS issues with OpenText
-// On Railway/production, use the hostname from env; locally, try IP fallback
-const isRailway = !!process.env.RAILWAY_SERVICE_NAME;
-const SMTP_HOST = env.SMTP_HOST
-  ? env.SMTP_HOST  // Always use env var when configured
-  : 'smtp.gmail.com';
 
 const prisma = new PrismaClient();
 
@@ -37,66 +28,67 @@ interface ThankYouData {
   name: string;
 }
 
+const SENDGRID_API = 'https://api.sendgrid.com/v3/mail/send';
+
 /**
- * Email service using nodemailer
- * Falls back to console logging if SMTP not configured
+ * Email service using SendGrid REST API (HTTPS, works on Railway)
+ * Falls back to console logging if no API key configured
  */
 export class EmailService {
-  private transporter: nodemailer.Transporter | null = null;
+  private apiKey: string = '';
   private useConsoleFallback: boolean = false;
 
   constructor() {
-    if (env.SMTP_HOST) {
-      // Use SMTP_HOST (IP bypass for local dev, hostname for Railway/production)
-      this.transporter = nodemailer.createTransport({
-        host: SMTP_HOST,
-        port: env.SMTP_PORT,
-        secure: env.SMTP_PORT === 465,
-        auth: {
-          user: env.SMTP_USER,
-          pass: env.SMTP_PASS,
-        },
-        tls: {
-          servername: 'smtp.gmail.com', // Required for SNI when using IP
-          rejectUnauthorized: true,
-        },
-      });
+    // Try SendGrid API key first (SMTP_PASS), then SMTP_USER/PASS
+    this.apiKey = env.SMTP_PASS || '';
+    if (this.apiKey.startsWith('SG.')) {
+      console.log('[EmailService] SendGrid API key found — using REST API');
+    } else if (this.apiKey) {
+      console.log('[EmailService] SMTP password set but not a SendGrid key — will try SMTP but Railway likely blocks it');
     } else {
       this.useConsoleFallback = true;
-      console.warn('[EmailService] SMTP not configured — emails will be logged to console');
+      console.warn('[EmailService] No email API key configured — emails will be logged to console');
     }
   }
 
-  /**
-   * Send an email
-   */
   private async sendMail(to: string, subject: string, html: string, template?: string, orderId?: string): Promise<void> {
-    if (this.useConsoleFallback || !this.transporter) {
+    if (this.useConsoleFallback || !this.apiKey) {
       console.log(`[EmailService] TO: ${to}`);
       console.log(`[EmailService] SUBJECT: ${subject}`);
-      console.log(`[EmailService] HTML: ${html.substring(0, 200)}...`);
       await this.logEmail(to, subject, template || 'unknown', 'sent', undefined, orderId);
       return;
     }
 
     try {
-      await this.transporter.sendMail({
-        from: `"Woven Model" <${env.SMTP_FROM}>`,
-        replyTo: env.SMTP_REPLY_TO || 'sales@wovenmodel.com',
-        to,
-        subject,
-        html,
+      // Use SendGrid REST API (HTTPS port 443 — works on Railway)
+      const resp = await fetch(SENDGRID_API, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${this.apiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          personalizations: [{ to: [{ email: to }] }],
+          from: { email: env.SMTP_FROM || 'ceo@wovenmodel.com', name: 'Woven Model' },
+          reply_to: { email: env.SMTP_REPLY_TO || 'sales@wovenmodel.com' },
+          subject,
+          content: [{ type: 'text/html', value: html }],
+        }),
       });
+
+      if (!resp.ok) {
+        const errBody = await resp.text();
+        throw new Error(`SendGrid API ${resp.status}: ${errBody.slice(0, 200)}`);
+      }
+
+      console.log(`[EmailService] Sent: ${subject} -> ${to}`);
       await this.logEmail(to, subject, template || 'unknown', 'sent', undefined, orderId);
     } catch (error: any) {
-      console.error('[EmailService] Failed to send email:', error);
+      console.error('[EmailService] Failed to send email:', error.message);
       await this.logEmail(to, subject, template || 'unknown', 'failed', error.message, orderId);
     }
   }
 
-  /**
-   * Log email to database
-   */
   private async logEmail(to: string, subject: string, template: string, status: string, error?: string, orderId?: string): Promise<void> {
     try {
       await prisma.emailLog.create({
@@ -114,18 +106,12 @@ export class EmailService {
     }
   }
 
-  /**
-   * Send order confirmation email
-   */
   async sendOrderConfirmation(to: string, data: OrderConfirmationData): Promise<void> {
     const subject = `Order Confirmation — #${data.orderNumber}`;
     const html = orderConfirmationHtml(data);
     await this.sendMail(to, subject, html, 'order_confirmation', data.orderNumber);
   }
 
-  /**
-   * Send license delivery email with product and activation details
-   */
   async sendLicenseDelivery(to: string, data: LicenseDeliveryData): Promise<void> {
     const subject = `Your License for ${data.productName} is Ready`;
     const html = licenseDelivery({
@@ -143,9 +129,6 @@ export class EmailService {
     await this.sendMail(to, subject, html, 'license_delivery');
   }
 
-  /**
-   * Send thank you email after purchase
-   */
   async sendThankYou(to: string, data: ThankYouData): Promise<void> {
     const subject = 'Thank You for Your Purchase!';
     const html = thankYou({ customerName: data.name });
@@ -153,5 +136,4 @@ export class EmailService {
   }
 }
 
-// Singleton instance
 export const emailService = new EmailService();
