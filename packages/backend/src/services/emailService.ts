@@ -69,7 +69,7 @@ export class EmailService {
         },
         body: JSON.stringify({
           personalizations: [{ to: [{ email: to }] }],
-          from: { email: env.SMTP_FROM || 'ceo@wovenmodel.com', name: 'Woven Model' },
+          from: { email: 'judewow@gmail.com', name: 'Woven Model' },
           reply_to: { email: env.SMTP_REPLY_TO || 'sales@wovenmodel.com' },
           subject,
           content: [{ type: 'text/html', value: html }],
