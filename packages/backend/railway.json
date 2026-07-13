@@ -4,7 +4,7 @@
   "service": "woven-model-purchase-system",
   "build": {
     "builder": "NIXPACKS",
-    "buildCommand": "npm install && npx prisma generate && npm run build -w @woven-model/purchase-system-frontend && cp -r packages/frontend/dist packages/backend/public"
+    "buildCommand": "npm install && npx prisma generate"
   },
   "deploy": {
     "startCommand": "npx prisma generate && npx prisma db push --accept-data-loss && npx tsx src/index.ts",
