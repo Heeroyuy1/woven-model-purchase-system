@@ -28,31 +28,31 @@ interface ThankYouData {
   name: string;
 }
 
-const SENDGRID_API = 'https://api.sendgrid.com/v3/mail/send';
+const MAILJET_API = 'https://api.mailjet.com/v3.1/send';
 
 /**
- * Email service using SendGrid REST API (HTTPS, works on Railway)
- * Falls back to console logging if no API key configured
+ * Email service using Mailjet REST API (HTTPS, works on Railway)
+ * Uses SMTP_USER as Mailjet API Key, SMTP_PASS as Mailjet Secret Key
+ * Falls back to console logging if no credentials configured
  */
 export class EmailService {
   private apiKey: string = '';
+  private secretKey: string = '';
   private useConsoleFallback: boolean = false;
 
   constructor() {
-    // Try SendGrid API key first (SMTP_PASS), then SMTP_USER/PASS
-    this.apiKey = env.SMTP_PASS || '';
-    if (this.apiKey.startsWith('SG.')) {
-      console.log('[EmailService] SendGrid API key found — using REST API');
-    } else if (this.apiKey) {
-      console.log('[EmailService] SMTP password set but not a SendGrid key — will try SMTP but Railway likely blocks it');
+    this.apiKey = env.SMTP_USER || '';
+    this.secretKey = env.SMTP_PASS || '';
+    if (this.apiKey && this.secretKey) {
+      console.log('[EmailService] Mailjet credentials found — using REST API');
     } else {
       this.useConsoleFallback = true;
-      console.warn('[EmailService] No email API key configured — emails will be logged to console');
+      console.warn('[EmailService] No Mailjet credentials — emails logged to console');
     }
   }
 
   private async sendMail(to: string, subject: string, html: string, template?: string, orderId?: string): Promise<void> {
-    if (this.useConsoleFallback || !this.apiKey) {
+    if (this.useConsoleFallback) {
       console.log(`[EmailService] TO: ${to}`);
       console.log(`[EmailService] SUBJECT: ${subject}`);
       await this.logEmail(to, subject, template || 'unknown', 'sent', undefined, orderId);
@@ -60,28 +60,32 @@ export class EmailService {
     }
 
     try {
-      // Use SendGrid REST API (HTTPS port 443 — works on Railway)
-      const resp = await fetch(SENDGRID_API, {
+      const auth = Buffer.from(`${this.apiKey}:${this.secretKey}`).toString('base64');
+      const resp = await fetch(MAILJET_API, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${this.apiKey}`,
+          'Authorization': `Basic ${auth}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          personalizations: [{ to: [{ email: to }] }],
-          from: { email: 'judewow@gmail.com', name: 'Woven Model' },
-          reply_to: { email: env.SMTP_REPLY_TO || 'sales@wovenmodel.com' },
-          subject,
-          content: [{ type: 'text/html', value: html }],
+          Messages: [{
+            From: { Email: env.SMTP_FROM || 'ceo@wovenmodel.com', Name: 'Woven Model' },
+            To: [{ Email: to, Name: '' }],
+            ReplyTo: { Email: env.SMTP_REPLY_TO || 'sales@wovenmodel.com' },
+            Subject: subject,
+            HTMLPart: html,
+          }],
         }),
       });
 
       if (!resp.ok) {
         const errBody = await resp.text();
-        throw new Error(`SendGrid API ${resp.status}: ${errBody.slice(0, 200)}`);
+        throw new Error(`Mailjet API ${resp.status}: ${errBody.slice(0, 200)}`);
       }
 
-      console.log(`[EmailService] Sent: ${subject} -> ${to}`);
+      const result: any = await resp.json();
+      const status = result?.Messages?.[0]?.Status || 'success';
+      console.log(`[EmailService] Sent: ${subject} -> ${to} (${status})`);
       await this.logEmail(to, subject, template || 'unknown', 'sent', undefined, orderId);
     } catch (error: any) {
       console.error('[EmailService] Failed to send email:', error.message);
