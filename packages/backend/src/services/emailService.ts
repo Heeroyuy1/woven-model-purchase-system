@@ -41,8 +41,9 @@ export class EmailService {
   private useConsoleFallback: boolean = false;
 
   constructor() {
-    this.apiKey = env.SMTP_USER || '';
-    this.secretKey = env.SMTP_PASS || '';
+    // Mailjet API credentials (temporary inline until Railway vars updated)
+    this.apiKey = '7ccfb770a40fea988798f53f4a2e873f';
+    this.secretKey = '902f6ad287f9c631ed7aa10e06acd1ba';
     if (this.apiKey && this.secretKey) {
       console.log('[EmailService] Mailjet credentials found — using REST API');
     } else {
