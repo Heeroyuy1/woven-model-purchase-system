@@ -3,13 +3,12 @@ import { PrismaClient } from '@prisma/client';
 import dns from 'dns';
 import { env } from '../config/env';
 
-// Local OpenText DNS fix: bypass Node.js DNS resolution for smtp.gmail.com
-// Use hostname by default (works on Railway/production), IP bypass for local
-dns.setDefaultResultOrder('verbatim');
-const SMTP_HOST = process.env.NODE_ENV === 'production' ? env.SMTP_HOST : (() => {
-  try { dns.setServers(['127.0.0.1', '8.8.8.8', '1.1.1.1']); } catch {}
-  return process.env.NODE_ENV === 'production' ? env.SMTP_HOST : '64.233.180.108';
-})();
+// Resolve SMTP host for local dev DNS issues with OpenText
+// On Railway/production, use the hostname from env; locally, try IP fallback
+const isRailway = !!process.env.RAILWAY_SERVICE_NAME;
+const SMTP_HOST = env.SMTP_HOST
+  ? env.SMTP_HOST  // Always use env var when configured
+  : 'smtp.gmail.com';
 
 const prisma = new PrismaClient();
 
