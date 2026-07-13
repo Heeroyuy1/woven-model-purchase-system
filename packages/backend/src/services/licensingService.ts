@@ -164,4 +164,10 @@ export function getLicensingClient(): LicensingApiClient {
   }
   return _licensingClient;
 }
-export const licensingClient = _licensingClient as any; // backward compat
+// Proxy object so old import { licensingClient } still works without crashing
+export const licensingClient = new Proxy({} as LicensingApiClient, {
+  get(_, prop) {
+    const client = getLicensingClient();
+    return (client as any)[prop];
+  }
+});
