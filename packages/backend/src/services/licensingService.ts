@@ -156,4 +156,12 @@ export class LicensingApiClient {
   }
 }
 
-export const licensingClient = new LicensingApiClient();
+// Lazy initialization - don't crash on module load
+let _licensingClient: LicensingApiClient | null = null;
+export function getLicensingClient(): LicensingApiClient {
+  if (!_licensingClient) {
+    _licensingClient = new LicensingApiClient();
+  }
+  return _licensingClient;
+}
+export const licensingClient = _licensingClient as any; // backward compat

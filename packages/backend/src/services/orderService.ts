@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { getPaymentProcessor } from './paymentService';
-import { licensingClient } from './licensingService';
+import { getLicensingClient } from './licensingService';
 import { emailService } from './emailService';
 import { env } from '../config/env';
 
@@ -94,7 +94,7 @@ export async function processOrder(orderId: string, paymentMethod: string, payme
     const perpetual = licenseType === 'perpetual' || licenseType === 'enterprise' || licenseType === 'developer';
 
     try {
-      const licenseResult = await licensingClient.generateLicense({
+      const licenseResult = await getLicensingClient().generateLicense({
         productCode: item.productCode,
         userId: order.customer.licensingUserId || 1,
         licenseType,
