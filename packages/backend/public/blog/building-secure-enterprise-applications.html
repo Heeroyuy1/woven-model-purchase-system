@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Building Secure Enterprise Applications — DevSecOps practices, shift-left security, threat modeling with STRIDE, SAST/DAST tooling, and API security strategies.">
+    <title>Building Secure Enterprise Applications | Woven Model Blog</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="../favicon.ico">
+    <style>
+        :root {
+            --color-navy-950: #0a0f1e; --color-navy-900: #0d1428; --color-navy-800: #111b36;
+            --color-navy-700: #162244; --color-navy-600: #1c2d56; --color-navy-500: #243a6b;
+            --color-cyan-400: #22d3ee; --color-cyan-500: #06b6d4; --color-cyan-600: #0891b2;
+            --color-white: #ffffff; --color-gray-100: #f3f4f6; --color-gray-200: #e5e7eb;
+            --color-gray-300: #d1d5db; --color-gray-400: #9ca3af; --color-gray-500: #6b7280;
+            --color-gray-600: #4b5563; --color-gray-700: #374151;
+            --glass-bg: rgba(17, 27, 54, 0.6); --glass-border: rgba(34, 211, 238, 0.15);
+            --glass-shadow: 0 8px 32px rgba(0,0,0,0.4); --glass-blur: blur(16px);
+            --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            --max-width: 800px;
+        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--color-navy-950);
+            color: var(--color-gray-300);
+            line-height: 1.8;
+            -webkit-font-smoothing: antialiased;
+        }
+        .container { max-width: var(--max-width); margin: 0 auto; padding: 0 1.5rem; }
+        .nav {
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--glass-border);
+            margin-bottom: 3rem;
+        }
+        .nav-inner { display: flex; align-items: center; justify-content: space-between; }
+        .nav-logo { font-weight: 700; font-size: 1.2rem; color: var(--color-white); text-decoration: none; }
+        .nav-links { display: flex; gap: 1.5rem; }
+        .nav-links a { color: var(--color-gray-400); text-decoration: none; font-size: 0.9rem; transition: color 150ms; }
+        .nav-links a:hover { color: var(--color-cyan-400); }
+        .category-badge {
+            display: inline-block;
+            background: rgba(6,182,212,0.1); border: 1px solid var(--glass-border);
+            border-radius: 50px; padding: 0.3rem 0.8rem;
+            font-size: 0.75rem; font-weight: 600; color: var(--color-cyan-400);
+            text-transform: uppercase; letter-spacing: 0.05em;
+            margin-bottom: 1rem;
+        }
+        h1 { font-size: clamp(2rem, 4vw, 2.8rem); color: var(--color-white); line-height: 1.2; margin-bottom: 0.75rem; }
+        .meta { color: var(--color-gray-500); font-size: 0.85rem; margin-bottom: 2rem; }
+        h2 { font-size: 1.5rem; color: var(--color-white); margin: 2.5rem 0 1rem; }
+        h3 { font-size: 1.15rem; color: var(--color-white); margin: 1.5rem 0 0.75rem; }
+        p { margin-bottom: 1rem; }
+        .highlight-box {
+            background: var(--glass-bg); backdrop-filter: var(--glass-blur);
+            border: 1px solid var(--glass-border); border-radius: 12px;
+            padding: 1.5rem; margin: 1.5rem 0;
+        }
+        .highlight-box .stat { font-size: 1.8rem; font-weight: 800; color: var(--color-cyan-400); }
+        ul, ol { margin: 1rem 0 1rem 1.5rem; }
+        li { margin-bottom: 0.5rem; }
+        .takeaways {
+            background: rgba(34,211,238,0.05); border: 1px solid var(--glass-border);
+            border-radius: 12px; padding: 1.5rem; margin: 2rem 0;
+        }
+        .takeaways h3 { margin-top: 0; }
+        .takeaways li { color: var(--color-gray-200); }
+        .sources {
+            border-top: 1px solid var(--glass-border); padding-top: 1.5rem;
+            margin-top: 2rem; font-size: 0.85rem; color: var(--color-gray-500);
+        }
+        .sources a { color: var(--color-cyan-400); }
+        .cta-section {
+            text-align: center; padding: 3rem 0; margin-top: 3rem;
+            border-top: 1px solid var(--glass-border);
+        }
+        .cta-btn {
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            background: linear-gradient(135deg, var(--color-cyan-500), var(--color-cyan-600));
+            color: var(--color-navy-950); padding: 0.8rem 2rem; border-radius: 10px;
+            font-weight: 600; font-size: 0.95rem; text-decoration: none;
+            transition: all 150ms;
+        }
+        .cta-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 28px rgba(6,182,212,0.4); }
+        .footer { text-align: center; padding: 2rem 0; color: var(--color-gray-600); font-size: 0.85rem; border-top: 1px solid var(--glass-border); margin-top: 2rem; }
+        @media (max-width: 600px) { .nav-inner { flex-direction: column; gap: 1rem; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav class="nav">
+            <div class="nav-inner">
+                <a href="../index.html" class="nav-logo">Woven Model</a>
+                <div class="nav-links">
+                    <a href="../index.html">Home</a>
+                    <a href="../index.html#services">Services</a>
+                    <a href="../index.html#products">Products</a>
+                    <a href="../index.html#blog">Blog</a>
+                    <a href="../index.html#contact">Contact</a>
+                </div>
+            </div>
+        </nav>
+
+        <span class="category-badge">Development</span>
+        <h1>Building Secure Enterprise Applications</h1>
+        <p class="meta">Published July 11, 2026 • 8 min read</p>
+
+        <p>The Verizon 2025 Data Breach Investigations Report delivers a stark finding: 20% of all breaches involve exploitation of vulnerabilities — code-level weaknesses that could have been identified and remediated during development. With IBM's Cost of a Data Breach Report 2024 pegging the average breach at $4.88 million, enterprises can no longer treat security as a release-gate checkbox. The OWASP Top 10 (2021) catalogs the most critical web application security risks — broken access control, cryptographic failures, injection, and insecure design — providing a roadmap for teams ready to embed security from day one.</p>
+
+        <p>This article examines the practices, frameworks, and tooling that enable organizations to build secure enterprise applications at scale: shifting security left in the software development lifecycle (SDLC), conducting structured threat modeling, instrumenting DevSecOps pipelines, and hardening APIs against the most common attack patterns.</p>
+
+        <h2>Secure SDLC and Shift-Left Security</h2>
+        <p>"Shift-left" means moving security activities from post-development review into the earliest phases of the SDLC — requirements, design, and implementation. The economic argument is well established: NIST's Secure Software Development Framework (SSDF, SP 800-218) notes that finding and fixing a vulnerability during design costs approximately thirty times less than remediating the same flaw in production. The later a defect is discovered, the more systems, data flows, and integrations must be reworked.</p>
+
+        <p>Traditional security testing — a penetration test or vulnerability scan conducted weeks before release — creates perverse incentives. Findings delay shipping, so teams cut corners or defer remediation, and vulnerabilities reach production. Shift-left replaces this dynamic with continuous, automated security activities integrated into every phase:</p>
+        <ul>
+            <li>Security acceptance criteria written alongside functional requirements</li>
+            <li>Static analysis alerts surfaced within pull requests, before code is merged</li>
+            <li>Dynamic scanning executed against staging environments on every deployment</li>
+            <li>Developer training in secure coding patterns as a standard onboarding requirement</li>
+        </ul>
+        <p>Organizations that implement shift-left practices consistently report catching 50–60% of security defects before code reaches the test environment, dramatically reducing both cost and release friction.</p>
+
+        <h2>Threat Modeling in Practice</h2>
+        <p>Threat modeling is a structured approach to identifying and mitigating security threats during the design phase, before a single line of code is written. The most widely adopted framework is STRIDE, developed by Microsoft security engineers. STRIDE categorizes threats into six types: Spoofing, Tampering, Repudiation, Information Disclosure, Denial of Service, and Elevation of Privilege.</p>
+
+        <p>A practical threat modeling exercise follows three steps. First, the team diagrams the application architecture, mapping data flows, trust boundaries, and every external entry point. Second, they apply the STRIDE categories to each component — asking, for example, "Can an unauthenticated user tamper with data in transit between the web frontend and the API gateway?" or "Does this endpoint allow privilege escalation through parameter manipulation?" Third, documented mitigations are assigned for each identified threat: implemented controls, accepted risks, or architectural changes.</p>
+
+        <div class="highlight-box">
+            <div class="stat">30x</div>
+            <p>Cost multiplier for fixing a vulnerability in production versus catching it during design — NIST SSDF SP 800-218</p>
+        </div>
+
+        <p>Microsoft's Threat Modeling Tool provides a structured environment for this process, generating data flow diagrams automatically and suggesting mitigations aligned to STRIDE categories. When integrated into the design review gate — typically triggered by any architecture change — threat modeling catches flaws that no automated scanner can find, because the vulnerability exists in the design itself, not in its implementation.</p>
+
+        <h2>Tooling for DevSecOps Pipelines</h2>
+        <p>A mature DevSecOps pipeline layers three complementary categories of automated analysis, each optimized for different phases and vulnerability classes.</p>
+
+        <p><strong>Static Application Security Testing (SAST)</strong> analyzes source code without executing it. SAST is most effective when run on every commit, giving developers near-instant feedback on injection flaws, cryptographic misconfigurations, and cross-site scripting risks. GitHub CodeQL, which powers GitHub Advanced Security's code scanning, has become a widely adopted SAST solution, capable of detecting custom vulnerability patterns defined by the organization. SonarQube, another standard in the space, combines code-quality analysis with security rules across more than thirty programming languages.</p>
+
+        <p><strong>Dynamic Application Security Testing (DAST)</strong> analyzes running applications by simulating real attacks. DAST catches vulnerabilities that SAST inherently misses — those dependent on runtime behavior, configuration state, and third-party service interactions. DAST tools are typically integrated into staging or QA pipelines, providing a safety net that exercises the application as an attacker would.</p>
+
+        <p><strong>Software Composition Analysis (SCA)</strong> scans open-source dependencies for known vulnerabilities. The Snyk State of Cloud Application Security Report 2025 found that the average enterprise application contains over four hundred direct dependencies, each representing a potential attack vector. SCA tools such as Snyk and GitHub Dependabot automatically detect vulnerable packages and, in many cases, raise automated pull requests with fixes. Snyk's report further notes that organizations with mature, automated DevSecOps pipelines fix security vulnerabilities 7.5 times faster than teams relying on manual periodic review.</p>
+
+        <p>The goal is not to maximize the number of tools but to build a balanced pipeline where each category catches what it is best suited to detect, without overwhelming developers with noise. Well-tuned pipelines maintain a false-positive rate under five percent, preserving trust in the automated findings.</p>
+
+        <h2>API Security</h2>
+        <p>Modern enterprise applications are API-first by design. Every mobile app, single-page frontend, and third-party integration communicates through APIs, dramatically expanding the attack surface. The OWASP API Security Top 10 (2023) identifies the risks most specific to APIs, with Broken Object Level Authorization (BOLA) consistently ranking as the most prevalent. BOLA occurs when an API endpoint fails to verify that the requesting user is authorized to access the specific object they request — for instance, changing an account ID parameter in a URL to access another user's data. Despite being well-documented for years, OWASP reports that BOLA appears in thirty to forty percent of API security assessments.</p>
+
+        <p>API security demands a layered defense: strict authentication and authorization enforced at the API gateway, rate limiting to prevent abuse and scraping, comprehensive input validation on every endpoint, and continuous monitoring for anomalous traffic patterns. Tools such as Azure API Management, Kong, and AWS API Gateway provide centralized policy enforcement, while dedicated API security testing platforms — 42Crunch, Salt Security, and Akamai API Security — specialize in detecting API-specific logic flaws that standard web scanners overlook.</p>
+
+        <div class="takeaways">
+            <h3>Key Takeaways</h3>
+            <ul>
+                <li>20% of breaches involve vulnerability exploitation (Verizon 2025 DBIR) — code-level weaknesses remain a primary attack vector</li>
+                <li>Shift-left security reduces remediation costs by detecting flaws during design and development phases rather than in production</li>
+                <li>STRIDE threat modeling catches architectural vulnerabilities that no automated scanner can detect</li>
+                <li>A balanced DevSecOps toolchain of SAST, DAST, and SCA provides comprehensive, automated security coverage</li>
+                <li>Organizations with mature DevSecOps pipelines fix vulnerabilities 7.5x faster than those relying on manual reviews (Snyk 2025)</li>
+                <li>API security requires dedicated attention — BOLA remains the most common API vulnerability, appearing in 30–40% of assessments</li>
+                <li>Security-by-design principles from NIST and OWASP guidance should be embedded into every phase of the SDLC</li>
+            </ul>
+        </div>
+
+        <div class="cta-section">
+            <p style="margin-bottom:1.5rem;color:var(--color-gray-400)">Building secure applications is a continuous journey. Let our team help you design a DevSecOps strategy that fits your organization.</p>
+            <a href="../index.html#contact" class="cta-btn">Talk to Our Team →</a>
+        </div>
+
+        <div class="sources">
+            <h3>Sources</h3>
+            <ol>
+                <li>Verizon 2025 Data Breach Investigations Report — <a href="https://www.verizon.com/business/resources/reports/dbir/" target="_blank" rel="noopener">verizon.com</a></li>
+                <li>IBM Cost of a Data Breach Report 2024 — <a href="https://www.ibm.com/reports/data-breach" target="_blank" rel="noopener">ibm.com</a></li>
+                <li>OWASP Top 10: 2021 — <a href="https://owasp.org/Top10/" target="_blank" rel="noopener">owasp.org</a></li>
+                <li>NIST Secure Software Development Framework (SSDF) SP 800-218 — <a href="https://csrc.nist.gov/publications/detail/sp/800-218/final" target="_blank" rel="noopener">csrc.nist.gov</a></li>
+                <li>Microsoft STRIDE Threat Modeling — <a href="https://learn.microsoft.com/en-us/azure/security/develop/threat-modeling-tool" target="_blank" rel="noopener">microsoft.com</a></li>
+                <li>OWASP API Security Top 10 (2023) — <a href="https://owasp.org/www-project-api-security/" target="_blank" rel="noopener">owasp.org</a></li>
+                <li>GitHub Advanced Security / CodeQL Documentation — <a href="https://docs.github.com/en/code-security/code-scanning" target="_blank" rel="noopener">github.com</a></li>
+                <li>Snyk State of Cloud Application Security Report 2025 — <a href="https://snyk.io/reports/state-of-cloud-application-security-2025/" target="_blank" rel="noopener">snyk.io</a></li>
+                <li>SonarQube Documentation — <a href="https://docs.sonarsource.com/sonarqube/latest/" target="_blank" rel="noopener">sonarsource.com</a></li>
+            </ol>
+        </div>
+
+        <div class="footer">
+            <p>&copy; 2026 Woven Model. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>

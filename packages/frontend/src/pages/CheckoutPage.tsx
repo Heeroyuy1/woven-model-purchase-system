@@ -74,7 +74,7 @@ export default function CheckoutPage() {
     setApplyingCoupon(true);
     setCouponError('');
     try {
-      const res = await licensingApi.validateCoupon(couponCode.trim());
+      const res: any = await licensingApi.validateCoupon(couponCode.trim());
       if (res.discountPercent) {
         setDiscount(res.discountPercent);
         toast.success(`Coupon applied! ${res.discountPercent}% off`);
@@ -121,7 +121,7 @@ export default function CheckoutPage() {
         },
         couponCode: couponCode || undefined,
       };
-      const result = await licensingApi.placeOrder(orderData);
+      const result: any = await licensingApi.placeOrder(orderData);
       toast.success('Order placed successfully!');
       navigate(`/order/${result.order?.id || result.order?.orderNumber || 'confirmation'}`);
     } catch (err: any) {
