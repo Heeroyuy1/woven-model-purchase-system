@@ -33,7 +33,7 @@ Production-ready commerce platform — from product discovery through payment, l
 | **Backend** | Node.js, Express 4, TypeScript, Prisma 6 ORM |
 | **Database** | SQLite (dev), PostgreSQL-ready (Prisma) |
 | **Licensing** | FastAPI server on Railway (`woven-licensing-production.up.railway.app`) |
-| **Email** | Nodemailer via Gmail SMTP (App Password) |
+| **Email** | SMTP2GO via SMTP (Nodemailer, `mail.smtp2go.com:2525`) |
 | **Payments** | Stripe/PayPal (abstracted processor pattern) |
 | **Auth** | JWT (bcrypt, 7-day expiry) |
 

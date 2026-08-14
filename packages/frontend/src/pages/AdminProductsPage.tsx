@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Plus, X, Edit2, Loader2 } from 'lucide-react';
+import { Plus, X, Edit2, Loader2, Trash2 } from 'lucide-react';
+import toast from 'react-hot-toast';
 import * as api from '../services/licensingApi';
 
 interface Product {
@@ -9,7 +10,7 @@ interface Product {
   pricing: number;
   category: string;
   licenseType: string;
-  status: string;
+  active: boolean;
   shortDescription?: string;
   features?: string[];
   platformSupport?: string[];
@@ -268,10 +269,25 @@ export default function AdminProductsPage() {
   };
 
   const handleToggleStatus = (product: Product) => {
-    const newStatus = product.status === 'active' ? 'inactive' : 'active';
-    api.adminUpdateProduct(product.id, { status: newStatus })
-      .then(() => fetchProducts())
-      .catch((err: Error) => alert(err.message));
+    const newActive = !product.active;
+    api.adminUpdateProduct(product.id, { active: newActive })
+      .then(() => {
+        toast.success(newActive ? 'Product activated' : 'Product deactivated');
+        fetchProducts();
+      })
+      .catch((err: Error) => toast.error(err.message));
+  };
+
+  const handleDelete = (product: Product) => {
+    const productName = product.name || product.code;
+    const confirmed = window.confirm(`Delete product "${productName}"? This cannot be undone.`);
+    if (!confirmed) return;
+    api.adminDeleteProduct(product.id)
+      .then(() => {
+        toast.success(`Product "${productName}" deleted`);
+        fetchProducts();
+      })
+      .catch((err: Error) => toast.error(err.message));
   };
 
   const handleEdit = (product: Product) => {
@@ -339,7 +355,7 @@ export default function AdminProductsPage() {
                     <td className="p-3 text-gray-300 text-right">${(product.pricing || 0).toFixed(2)}</td>
                     <td className="p-3 text-gray-400 text-sm">{product.category.replace(/_/g, ' ')}</td>
                     <td className="p-3 text-gray-400 text-sm">{product.licenseType.charAt(0).toUpperCase() + product.licenseType.slice(1)}</td>
-                    <td className="p-3 text-center"><StatusBadge status={product.status || 'active'} /></td>
+                    <td className="p-3 text-center"><StatusBadge status={product.active ?? true ? 'active' : 'inactive'} /></td>
                     <td className="p-3 text-center">
                       <div className="flex items-center justify-center gap-2">
                         <button
@@ -352,12 +368,19 @@ export default function AdminProductsPage() {
                         <button
                           onClick={() => handleToggleStatus(product)}
                           className={`px-2.5 py-1 rounded-lg text-xs font-medium border transition-colors ${
-                            product.status === 'active'
+                            product.active
                               ? 'text-red-400 border-red-500/30 hover:bg-red-500/10'
                               : 'text-green-400 border-green-500/30 hover:bg-green-500/10'
                           }`}
                         >
-                          {product.status === 'active' ? 'Deactivate' : 'Activate'}
+                          {product.active ? 'Deactivate' : 'Activate'}
+                        </button>
+                        <button
+                          onClick={() => handleDelete(product)}
+                          className="p-1.5 rounded-lg text-gray-400 hover:text-red-400 hover:bg-red-500/10 transition-colors"
+                          title="Delete"
+                        >
+                          <Trash2 className="w-4 h-4" />
                         </button>
                       </div>
                     </td>

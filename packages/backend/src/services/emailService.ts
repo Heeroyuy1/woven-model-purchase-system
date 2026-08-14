@@ -1,4 +1,6 @@
 import { PrismaClient } from '@prisma/client';
+import nodemailer from 'nodemailer';
+import dns from 'dns/promises';
 import { env } from '../config/env';
 
 const prisma = new PrismaClient();
@@ -28,30 +30,73 @@ interface ThankYouData {
   name: string;
 }
 
-const MAILJET_API = 'https://api.mailjet.com/v3.1/send';
-
 /**
- * Email service using SendGrid REST API (HTTPS port 443, works on Railway)
- * Falls back to console logging if no API key configured
+ * Email service using SMTP2GO (SMTP relay) via Nodemailer.
+ * - Port 2525 (or 8025/587/80/25) uses STARTTLS.
+ * - Port 465 (or 8465/443) uses SSL.
+ *
+ * DNS note: Node's bundled c-ares resolver (dns.resolve4) returns EFORMERR for
+ * mail.smtp2go.com because the response includes an extra TXT record. We resolve
+ * the host once at startup using dns.promises.lookup (OS resolver, which works),
+ * connect to the resolved IP, and keep SNI correct via `tls.servername`.
+ *
+ * Falls back to console logging when no SMTP password is configured.
  */
 export class EmailService {
-  private apiKey: string = '';
+  private transporter: nodemailer.Transporter | null = null;
   private useConsoleFallback: boolean = false;
+  private transportReady: Promise<void> | null = null;
 
   constructor() {
-    this.apiKey = env.SMTP_PASS || '';
-    if (this.apiKey.startsWith('SG.')) {
-      console.log('[EmailService] SendGrid API key found — using REST API');
-    } else if (this.apiKey) {
-      console.log('[EmailService] SMTP password set but not a SendGrid key');
+    const { SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS } = env;
+
+    if (SMTP_HOST && SMTP_PASS) {
+      this.transportReady = this.initTransport(SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS);
+      console.log(`[EmailService] SMTP transport configured: ${SMTP_HOST}:${SMTP_PORT}`);
     } else {
       this.useConsoleFallback = true;
-      console.warn('[EmailService] No email API key configured — emails logged to console');
+      console.warn('[EmailService] No SMTP password configured — emails logged to console');
     }
   }
 
+  private async initTransport(host: string, port: number, user: string, pass: string): Promise<void> {
+    let connectHost = host;
+    let servername: string | undefined;
+
+    try {
+      const { address } = await dns.lookup(host, { family: 4 });
+      if (address) {
+        connectHost = address;
+        servername = host;
+      }
+    } catch (error: any) {
+      console.warn(
+        `[EmailService] DNS lookup failed for ${host} (${error.code || error.message}) — using hostname directly`,
+      );
+    }
+
+    this.transporter = nodemailer.createTransport({
+      host: connectHost,
+      port,
+      secure: port === 465,
+      requireTLS: port !== 465,
+      auth: { user, pass },
+      ...(servername ? { tls: { servername } } : {}),
+    });
+  }
+
   private async sendMail(to: string, subject: string, html: string, template?: string, orderId?: string): Promise<void> {
-    if (this.useConsoleFallback || !this.apiKey) {
+    if (this.transportReady) {
+      try {
+        await this.transportReady;
+      } catch (error: any) {
+        console.error('[EmailService] SMTP transport init failed:', error.message);
+        await this.logEmail(to, subject, template || 'unknown', 'failed', `Transport init failed: ${error.message}`, orderId);
+        return;
+      }
+    }
+
+    if (this.useConsoleFallback || !this.transporter) {
       console.log(`[EmailService] TO: ${to}`);
       console.log(`[EmailService] SUBJECT: ${subject}`);
       await this.logEmail(to, subject, template || 'unknown', 'sent', undefined, orderId);
@@ -59,29 +104,15 @@ export class EmailService {
     }
 
     try {
-      const resp = await fetch(MAILJET_API, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Basic ${Buffer.from('7ccfb770a40fea988798f53f4a2e873f:902f6ad287f9c631ed7aa10e06acd1ba').toString('base64')}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          Messages: [{
-            From: { Email: env.SMTP_FROM || 'ceo@wovenmodel.com', Name: 'Woven Model' },
-            To: [{ Email: to, Name: '' }],
-            ReplyTo: { Email: env.SMTP_REPLY_TO || 'sales@wovenmodel.com' },
-            Subject: subject,
-            HTMLPart: html,
-          }],
-        }),
+      const info = await this.transporter.sendMail({
+        from: { name: 'Woven Model', address: env.SMTP_FROM || 'noreply@wovenmodel.com' },
+        to,
+        replyTo: env.SMTP_REPLY_TO || 'sales@wovenmodel.com',
+        subject,
+        html,
       });
 
-      if (!resp.ok) {
-        const errBody = await resp.text();
-        throw new Error(`Mailjet API ${resp.status}: ${errBody.slice(0, 200)}`);
-      }
-
-      console.log(`[EmailService] Sent: ${subject} -> ${to}`);
+      console.log(`[EmailService] Sent: ${subject} -> ${to} (${info.messageId})`);
       await this.logEmail(to, subject, template || 'unknown', 'sent', undefined, orderId);
     } catch (error: any) {
       console.error('[EmailService] Failed to send email:', error.message);

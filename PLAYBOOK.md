@@ -20,7 +20,7 @@ The system **automates everything** — no manual intervention required for stan
 |--------|---------|-----------|
 | **Licensing Platform** (Railway) | License generation, activation, validation | API via `LICENSING_API_URL` |
 | **Stripe** | Payment processing | API key in `.env` |
-| **Gmail SMTP** | Email delivery (confirmations, licenses, follow-ups) | App Password in `.env` |
+| **SMTP2GO** | Email delivery (confirmations, licenses, follow-ups) | SMTP credentials in `.env` |
 | **SQLite/PostgreSQL** | Data storage | Prisma ORM |
 
 ---
@@ -209,7 +209,7 @@ Before taking the system live:
 | "Invalid email or password" | Wrong credentials or DB not seeded | Run `npx tsx src/seed.ts` |
 | Cart shows empty after adding | API path mismatch | Add items via `/cart/add` endpoint |
 | License key starts with "PENDING-" | Licensing server unreachable | Check `LICENSING_API_URL` and Railway status |
-| No emails received | SMTP not configured or App Password expired | Update `SMTP_PASS` in `.env` |
+| No emails received | SMTP not configured or SMTP2GO credentials invalid | Update `SMTP_*` vars in `.env` |
 | Admin page shows blank | Not logged in as admin | Sign in as `admin@wovenmodel.com` |
 | 401 errors on API calls | JWT expired or missing | Re-login to get fresh token |
 | 500 Internal Server Error | Backend crash | Check terminal logs, restart server |
@@ -265,7 +265,7 @@ The system is designed to support these features with minimal changes:
 | Database GUI | `npx prisma studio` (runs on port 5555) |
 | Backend Logs | Terminal running `npx tsx src/index.ts` |
 | Source Code | `c:\Woven Model\Development\Internal Tools\Woven Model ProductPurchaseSystem` |
-| Email Configuration | Gmail App Password: https://myaccount.google.com/apppasswords |
+| Email Configuration | SMTP2GO dashboard: https://app.smtp2go.com |
 | Stripe Dashboard | https://dashboard.stripe.com |
 
 ---

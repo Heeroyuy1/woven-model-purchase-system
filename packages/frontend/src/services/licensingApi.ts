@@ -80,6 +80,9 @@ export const adminCreateProduct = (data: Record<string, unknown>) =>
 export const adminUpdateProduct = (id: string, data: Record<string, unknown>) =>
   api.put(`/admin/products/${id}`, data);
 
+export const adminDeleteProduct = (id: string) =>
+  api.delete(`/admin/products/${id}`);
+
 export const adminGetLicenses = () => api.get('/admin/licenses');
 
 export const adminGenerateLicense = (data: Record<string, unknown>) =>

@@ -106,10 +106,11 @@ taskkill /f /fi "IMAGENAME eq node.exe"
 4. Backend logs will show `[LicensingClient]` errors
 
 **Emails not sending:**
-1. Check `SMTP_PASS` is the 16-char App Password (no spaces)
-2. Test SMTP directly with the test script
+1. Verify `SMTP_HOST` is `mail.smtp2go.com` and `SMTP_PORT` is `2525` (or `465` for SSL)
+2. Confirm `SMTP_USER` / `SMTP_PASS` are the SMTP2GO SMTP credentials
 3. Check Email Logs in Admin panel
-4. Gmail App Passwords expire — regenerate at https://myaccount.google.com/apppasswords
+4. SMTP2GO credentials are managed at https://app.smtp2go.com
+5. Note: this app resolves the SMTP2GO host with the OS resolver (`dns.lookup`) to avoid Node's c-ares `EFORMERR` bug — do not change that logic
 
 ---
 
@@ -162,9 +163,10 @@ npx prisma studio
 | `LICENSING_API_URL` | Yes | Licensing server URL | `https://woven-licensing-production.up.railway.app/api/v1` |
 | `LICENSING_API_KEY` | Yes | Licensing admin password | `K23HzAshHAZEPqyI4` |
 | `STRIPE_SECRET_KEY` | For payments | Stripe secret | `sk_live_...` |
-| `SMTP_HOST` | For emails | SMTP server | `smtp.gmail.com` |
-| `SMTP_USER` | For emails | SMTP username | `ceo@wovenmodel.com` |
-| `SMTP_PASS` | For emails | App Password (16 chars) | `wwqkfwvvxalvdgvw` |
+| `SMTP_HOST` | Yes | SMTP server (SMTP2GO) | `mail.smtp2go.com` |
+| `SMTP_PORT` | Yes | SMTP port (2525 STARTTLS, 465 SSL) | `2525` |
+| `SMTP_USER` | For emails | SMTP username | `wovenmodel.com` |
+| `SMTP_PASS` | For emails | SMTP2GO password | Change in production |
 | `SMTP_FROM` | For emails | From address | `ceo@wovenmodel.com` |
 | `SMTP_REPLY_TO` | For emails | Reply-to address | `sales@wovenmodel.com` |
 | `ADMIN_EMAIL` | Yes | Licensing auth email | `admin@wovenmodel.com` |
