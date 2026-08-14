@@ -74,6 +74,9 @@ export const env = {
   get ADMIN_PASSWORD(): string {
     return loadEnv('ADMIN_PASSWORD', '');
   },
+  get BACKUP_EMAIL(): string {
+    return loadEnv('BACKUP_EMAIL', 'ceo@wovenmodel.com');
+  },
 };
 
 export default env;

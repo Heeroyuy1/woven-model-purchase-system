@@ -65,9 +65,11 @@ import checkoutRoutes from './routes/checkout';
 import orderRoutes from './routes/orders';
 import licenseRoutes from './routes/licenses';
 import adminRoutes from './routes/admin';
+import backupRoutes from './routes/backup';
 import portalRoutes from './routes/portal';
 import couponRoutes from './routes/coupons';
 import seedRoutes from './routes/seed';
+import { startScheduledBackups } from './services/backupService';
 
 // Routes
 app.use('/api/auth', authRoutes);
@@ -77,6 +79,7 @@ app.use('/api/checkout', checkoutRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/licenses', licenseRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/admin', backupRoutes);
 app.use('/api/portal', portalRoutes);
 app.use('/api/coupons', couponRoutes);
 app.use('/api/seed', seedRoutes);
@@ -99,6 +102,7 @@ try {
     console.log(`[PurchaseSystem] Licensing API: ${env.LICENSING_API_URL}`);
     console.log(`[PurchaseSystem] Frontend: ${env.FRONTEND_URL}`);
     console.log(`[PurchaseSystem] Environment: ${process.env.NODE_ENV || 'development'}`);
+    startScheduledBackups();
   });
 } catch (err) {
   console.error('Failed to start server:', err);
