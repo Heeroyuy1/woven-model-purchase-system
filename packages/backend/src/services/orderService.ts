@@ -163,10 +163,12 @@ export async function processOrder(orderId: string, paymentMethod: string, payme
       console.error('[OrderService] Failed to send order confirmation email:', error.message);
     }
 
+    const productNamesById = new Map(order.items.map(i => [i.productId, i.productName]));
+
     for (const lic of generatedLicenses) {
       try {
         await emailService.sendLicenseDelivery(order.customer.email, {
-          productName: lic.licenseType,
+          productName: productNamesById.get(lic.productId) || lic.licenseType,
           licenseKey: lic.licenseKey,
           version: '1.0.0',
           downloadUrl: `https://downloads.wovenmodel.com/${lic.id}`,
