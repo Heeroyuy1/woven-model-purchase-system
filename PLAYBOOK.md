@@ -19,9 +19,10 @@ The system **automates everything** — no manual intervention required for stan
 | System | Purpose | Connection |
 |--------|---------|-----------|
 | **Licensing Platform** (Railway) | License generation, activation, validation | API via `LICENSING_API_URL` |
-| **Stripe** | Payment processing | API key in `.env` |
-| **SMTP2GO** | Email delivery (confirmations, licenses, follow-ups) | SMTP credentials in `.env` |
-| **SQLite/PostgreSQL** | Data storage | Prisma ORM |
+| **Stripe** | Payment processing (simulated in demo) | API key in `.env` |
+| **SMTP2GO** | Email delivery (confirmations, licenses, backups) | SMTP credentials + IP/port probing at startup |
+| **PostgreSQL** (Railway) | Data storage (shared with the Licensing Platform) | Prisma ORM |
+| **Database Backups** | Full DB → gzipped JSON emailed daily + on demand | `BACKUP_EMAIL` (default `ceo@wovenmodel.com`) |
 
 ---
 
@@ -33,7 +34,7 @@ The system **automates everything** — no manual intervention required for stan
 |------|--------|-------------|
 | **Customer** | Public store + Customer Portal | Browse, purchase, download licenses, view orders |
 | **Admin** | Admin Dashboard | Manage products, orders, customers, generate licenses, view reports |
-| **System Operator** | Backend terminal + .env | Server startup, configuration, troubleshooting |
+| **System Operator** | Backend terminal + .env + Railway | Server startup, configuration, deployment, troubleshooting |
 
 ### Customer Journey (Automated)
 
@@ -43,11 +44,11 @@ The system **automates everything** — no manual intervention required for stan
 4. Proceeds to checkout → fills billing info
 5. Selects payment method (Stripe/PayPal)
 6. Order placed → automatic:
-   - Credit card charged
+   - Credit card charged (simulated with `tok_visa` unless a real Stripe key is set)
    - License generated on Licensing Server
    - License stored in local DB
    - Email sent: **Order Confirmation**
-   - Email sent: **License Key Delivery**
+   - Email sent: **License Key Delivery** (uses the real product name)
    - Email sent: **Thank You / Onboarding**
 7. Customer can view order + license keys in portal
 
@@ -58,7 +59,7 @@ The system **automates everything** — no manual intervention required for stan
 ### Product Management
 
 **Adding a product to the store:**
-1. Sign in as admin at `http://localhost:5173`
+1. Sign in as admin at the storefront (production URL or `http://localhost:5173`)
 2. Profile menu → Admin → Products
 3. Click **"Add Product"**
 4. Fill required fields (Name, Code, Price, Category, License Type)
@@ -80,7 +81,7 @@ The system **automates everything** — no manual intervention required for stan
 ### Coupon Management
 
 **Creating a coupon:**
-1. Admin → Coupons (in admin menu)
+1. Admin → Coupons
 2. Click **"Add Coupon"**
 3. Set:
    - **Code**: e.g., `LAUNCH20` or `WELCOME10`
@@ -165,94 +166,110 @@ Access via Admin → Reports
 
 ---
 
-## 6. Launch Checklist
+## 6. Database Backups & Disaster Recovery
 
-Before taking the system live:
+### Automated Backups
+- A full database backup (all tables → gzipped JSON) is emailed to `BACKUP_EMAIL` (default **ceo@wovenmodel.com**):
+  - **Daily** (every 24h)
+  - **60 seconds after every deploy/boot**
+  - **On demand** via `POST /api/admin/backup` (admin auth)
+- Backups are created with read-only Prisma queries — the process never modifies the database.
+- Filenames: `woven-model-purchase-backup-<timestamp>.json.gz`
+
+### Production Safety
+- The Railway start command is `npx prisma generate && npx tsx src/index.ts` — **no `prisma db push`**, so deployments never drop tables (the database is shared with the Licensing Platform).
+- If you ever need a real schema change, apply it explicitly and carefully on Railway.
+
+### If Licensing Server Goes Down
+- New orders still complete; license keys get a `PENDING-` prefix.
+- Admin can retry/supply licenses later (Admin → Licenses → Generate).
+- No data loss — all order info is stored locally.
+- **Known issue (Aug 2026):** a `prisma db push --accept-data-loss` deploy used to drop the shared DB's licensing tables, causing `500`/`401` license-generation failures. That risk is now removed (start command has no `db push`).
+
+### If Email Server Goes Down
+- Order and license data is still recorded.
+- Emails are logged to `EmailLog`; admin can view failures via Admin → Email Logs.
+
+### If Database Corrupts
+- **Daily backups arrive in the `BACKUP_EMAIL` inbox** — restore from the latest `.json.gz`.
+- Prisma Studio can inspect live data: `railway run --service woven-model-purchase-system npx prisma studio` (or locally `npx prisma studio`).
+
+---
+
+## 7. Testing the Full Purchase Flow
+
+An end-to-end script is included in the repo root (`test-purchase.ts`):
+
+```bash
+# From the repo root
+npx tsx test-purchase.ts judewow@gmail.com        # buys CONQUEST (default) → emails to that address
+npx tsx test-purchase.ts someone@example.com PII  # buys a different product
+```
+
+The script:
+1. Registers (or logs in) the buyer
+2. Adds the product to the cart
+3. Places the order (simulated Stripe payment)
+4. Prints order number, invoice, and license key
+5. Confirms the three emails (confirmation, license, thank-you) go to the buyer's inbox
+
+**Verified production run (Aug 14, 2026):** order `ORD-MSSXMTU6-502H` (Conquest Trading Engine, $499) completed with license `5CJTA-PBZ85-NAZ34-PS65G`; all three emails delivered to judewow@gmail.com; daily backup email verified at ceo@wovenmodel.com.
+
+---
+
+## 8. Launch Checklist
 
 ### Payment Processing
 - [ ] Stripe account created and verified
-- [ ] `STRIPE_SECRET_KEY` set in `.env`
+- [ ] `STRIPE_SECRET_KEY` set in `.env` / Railway (empty = demo mode)
 - [ ] Test transaction completed with `tok_visa`
 - [ ] Refund process understood
 
 ### Email Delivery
-- [ ] SMTP credentials tested
+- [ ] SMTP2GO credentials tested
 - [ ] Order confirmation email received
-- [ ] License delivery email received
+- [ ] License delivery email received (shows product name)
 - [ ] Thank-you email received
-- [ ] Check spam folder — add to allowlist
+- [ ] Spam folder checked — allowlist addresses
 
 ### Licensing
 - [ ] Licensing server accessible from production network
-- [ ] License generation tested end-to-end
+- [ ] License generation tested end-to-end (real key, not `PENDING-`)
+- [ ] `LICENSING_API_URL` + `ADMIN_EMAIL`/`ADMIN_PASSWORD` set in Railway env
 - [ ] License appears in admin panel
+
+### Backups
+- [ ] `BACKUP_EMAIL` set (defaults to ceo@wovenmodel.com)
+- [ ] Daily backup email verified
+- [ ] On-demand backup verified (`POST /api/admin/backup`)
 
 ### Security
 - [ ] `JWT_SECRET` changed from default
 - [ ] Admin password changed from default
-- [ ] HTTPS configured (reverse proxy or Railway deployment)
-- [ ] Database backup scheduled
+- [ ] HTTPS configured (Railway provides it)
+- [ ] Database backup scheduled (automated — verified)
 
 ### Storefront Polish
 - [ ] Product descriptions reviewed
 - [ ] Pricing confirmed
-- [ ] Screenshots uploaded (optional)
 - [ ] FAQ content added to products
 - [ ] Category organization reviewed
 
 ---
 
-## 7. Troubleshooting Quick Reference
+## 9. Troubleshooting Quick Reference
 
 | Symptom | Likely Cause | Fix |
 |---------|-------------|-----|
-| "Invalid email or password" | Wrong credentials or DB not seeded | Run `npx tsx src/seed.ts` |
+| "Invalid email or password" | Wrong credentials or DB not seeded | Run `npx tsx src/seed.ts` (local) |
 | Cart shows empty after adding | API path mismatch | Add items via `/cart/add` endpoint |
-| License key starts with "PENDING-" | Licensing server unreachable | Check `LICENSING_API_URL` and Railway status |
-| No emails received | SMTP not configured or SMTP2GO credentials invalid | Update `SMTP_*` vars in `.env` |
-| Admin page shows blank | Not logged in as admin | Sign in as `admin@wovenmodel.com` |
+| License key starts with "PENDING-" | Licensing server unreachable or bad admin creds | Check `LICENSING_API_URL`, `ADMIN_EMAIL`/`ADMIN_PASSWORD`, licensing DB tables |
+| License generation 500/401 | Licensing service's tables were dropped or creds mismatch | Redeploy licensing service (re-seeds admin); verify shared DB |
+| No emails received | SMTP2GO unreachable from Railway network | Startup probes IPs/ports (2525/587/465/8025); check `[EmailService] Using ...` log line |
+| No backup email | BACKUP_EMAIL wrong or SMTP down | Check `[BackupService]` logs; `POST /api/admin/backup` to trigger |
+| Admin page shows blank | Not logged in as admin | Sign in as admin |
 | 401 errors on API calls | JWT expired or missing | Re-login to get fresh token |
-| 500 Internal Server Error | Backend crash | Check terminal logs, restart server |
-
----
-
-## 8. Business Continuity
-
-### If Licensing Server Goes Down
-- New orders will still be created in local DB
-- License keys will be prefixed with `PENDING-`
-- Admin can retry license generation later via Admin → Licenses → Generate
-- No data loss — all order info is stored locally
-
-### If Email Server Goes Down
-- Order and license data is still recorded
-- Emails are logged to `EmailLog` table
-- Admin can view failed emails via Admin → Email Logs
-- Emails can be manually sent or retried after SMTP is restored
-
-### If Database Corrupts
-- Regular backups exist at `prisma/dev.db.backup`
-- Prisma Studio can inspect and repair data
-- Re-seeding repopulates products, coupons, and templates
-- Customer and order data would need separate restore
-
----
-
-## 9. Future Expansion (Architecture Ready)
-
-The system is designed to support these features with minimal changes:
-
-| Feature | What's Ready |
-|---------|-------------|
-| **Product Bundles** | Order items can represent bundles |
-| **Team/Enterprise Licensing** | License `activationLimit` field supports 999+ |
-| **Volume Discounts** | Coupon system can be extended for tiered pricing |
-| **Affiliate Program** | Coupon codes can track affiliate attribution |
-| **Recurring Subscriptions** | `Subscription` model exists, license expiry dates |
-| **Multi-currency** | `currency` field on Order model |
-| **Multi-language** | Frontend is React — i18n library can be added |
-| **Customer Reviews** | `ProductReview` model exists in schema |
-| **Wishlist** | Cart system can be adapted for wishlist |
+| 500 Internal Server Error | Backend crash | Check logs, restart server / redeploy |
 
 ---
 
@@ -260,10 +277,11 @@ The system is designed to support these features with minimal changes:
 
 | Resource | Location |
 |----------|----------|
+| Purchase System (production) | https://woven-model-purchase-system-production.up.railway.app |
 | Licensing Server Admin | https://woven-licensing-production.up.railway.app |
-| Licensing API Docs | FastAPI auto-generated docs available via the server |
-| Database GUI | `npx prisma studio` (runs on port 5555) |
-| Backend Logs | Terminal running `npx tsx src/index.ts` |
+| Licensing API Docs | FastAPI auto-generated docs (available via the licensing server) |
+| Database GUI | `npx prisma studio` (port 5555), or `railway run ... npx prisma studio` |
+| Backend Logs | `railway logs -s woven-model-purchase-system` |
 | Source Code | `c:\Woven Model\Development\Internal Tools\Woven Model ProductPurchaseSystem` |
 | Email Configuration | SMTP2GO dashboard: https://app.smtp2go.com |
 | Stripe Dashboard | https://dashboard.stripe.com |
@@ -275,13 +293,14 @@ The system is designed to support these features with minimal changes:
 - [ ] Check Admin Dashboard for new orders overnight
 - [ ] Review Email Logs for any delivery failures
 - [ ] Verify licensing server is responsive
-- [ ] Check for any 500 errors in backend terminal
+- [ ] Confirm the daily backup email arrived in `BACKUP_EMAIL`
+- [ ] Check for any 500 errors in backend logs
 
 ### Weekly
 - [ ] Review Sales Report for revenue trends
 - [ ] Check Product Report for top/bottom performers
 - [ ] Review License Report for expiring licenses
-- [ ] Backup database: `copy prisma\dev.db prisma\dev.db.weekly`
+- [ ] Spot-check one backup archive from the inbox
 
 ### Monthly
 - [ ] Full backup of all configurations
@@ -291,4 +310,4 @@ The system is designed to support these features with minimal changes:
 
 ---
 
-*© 2026 Woven Model. Last updated: July 2026*
+*© 2026 Woven Model. Last updated: August 14, 2026*

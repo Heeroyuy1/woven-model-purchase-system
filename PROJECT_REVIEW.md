@@ -2,7 +2,7 @@
 
 Comprehensive analysis of the existing Woven Model Product Purchase System, compiled from the actual project source. The implementation was treated as the source of truth; where documentation conflicts with code, the code wins.
 
-_Last updated: August 13, 2026_
+_Last updated: August 14, 2026_
 
 ---
 
@@ -19,8 +19,8 @@ It is **not** a traditional purchasing/requisition system (no purchase requests,
 | Frontend | React 19, TypeScript, Vite 6, TailwindCSS 3.4, Zustand 5, React Router 7, lucide-react, react-hot-toast | `@stripe/react-stripe-js` installed but unused |
 | Backend | Node.js, Express 4, TypeScript, Prisma 6 ORM, bcryptjs, jsonwebtoken, helmet, express-rate-limit, zod, stripe | Nodemailer used for SMTP2GO email delivery |
 | Database | PostgreSQL (Prisma schema, `purchase_` table prefix) | README/RUNBOOK mention SQLite dev DB — schema is authoritative |
-| Licensing | External FastAPI server on Railway (`woven-licensing-production.up.railway.app`) consumed via REST client | |
-| Email | SMTP2GO (SMTP relay via `mail.smtp2go.com:2525`, STARTTLS) | Previously Mailjet REST (hardcoded credentials removed) |
+| Licensing | External FastAPI server on Railway (`woven-licensing-production.up.railway.app`) consumed via REST client | Live-verified Aug 2026 |
+| Email | SMTP2GO (SMTP relay via `mail.smtp2go.com`, ports 2525/587/465/8025) | Startup probes SMTP2GO IPs and connects to a reachable IP:port (Railway network blocks some) |
 | Payments | Stripe (real when `STRIPE_SECRET_KEY` set; otherwise simulated) and PayPal (stub — always simulated success) | |
 | Auth | JWT (7-day expiry), bcrypt (12 rounds), roles (`customer`/`admin`/`super_admin`) | |
 
@@ -29,17 +29,20 @@ It is **not** a traditional purchasing/requisition system (no purchase requests,
 ```
 Woven Model ProductPurchaseSystem/
 ├── README.md / PLAYBOOK.md / RUNBOOK.md / PROJECT_REVIEW.md
+├── test-purchase.ts                   # End-to-end purchase test script
 ├── package.json                       # Root workspace (design-system, backend, frontend)
 ├── *.html, *.png                      # Marketing-site static assets
 └── packages/
     ├── backend/                       # Express API + serves built SPA
-    │   ├── src/index.ts               # Entry: helmet, CORS, rate limit, /api/health, routes, static SPA, catch-all
-    │   ├── src/config/env.ts          # Environment getters with defaults
+    │   ├── src/index.ts               # Entry: helmet, CORS, rate limit, /api/health, routes (incl. backup), static SPA, catch-all
+    │   ├── src/config/env.ts          # Environment getters with defaults (incl. BACKUP_EMAIL)
     │   ├── src/middleware/            # auth, errorHandler, validate (Zod)
-    │   ├── src/routes/                # auth, products, cart, checkout, orders, licenses, admin, portal, coupons, seed
-    │   ├── src/services/              # coupon, email (SMTP2GO), licensing, order, payment
+    │   ├── src/routes/                # auth, products, cart, checkout, orders, licenses, admin, portal, coupons, seed, backup
+    │   ├── src/services/              # coupon, email (SMTP2GO + IP probing), licensing, order, payment, backup
     │   ├── src/templates/             # HTML email builders (order confirmation, license delivery, thank you)
     │   ├── src/validators/            # Zod schemas
+    │   ├── Procfile                   # Railway start command (no `prisma db push`)
+    │   ├── railway.json               # Railway config (no `prisma db push`)
     │   └── prisma/schema.prisma       # 18 models
     ├── frontend/                      # React SPA (Vite)
     │   ├── src/pages/                 # 20 pages (store, auth, portal, admin)
@@ -57,22 +60,23 @@ Woven Model ProductPurchaseSystem/
 Monorepo workspace (npm) with three packages. Layers:
 
 - **Frontend (React SPA, port 5173 dev):** pages → Zustand stores + `licensingApi.ts` → `api.ts` fetch wrapper (`/api` base) → backend. Route guards: `ProtectedRoute` (logged-in), `AdminRoute` (role admin), `GuestRoute`.
-- **Backend (Express, port 3001):** `index.ts` registers security middleware (helmet, CORS allowlist, rate limit 200/min), `/api/health`, 10 route modules, then serves the built SPA from `backend/public` with an `app.get('*')` catch-all.
+- **Backend (Express, port 3001):** `index.ts` registers security middleware (helmet, CORS allowlist, rate limit 200/min), `/api/health`, 11 route modules (including the new backup route), then serves the built SPA from `backend/public` with an `app.get('*')` catch-all. `startScheduledBackups()` is invoked at server startup.
 - **Service layer:** `orderService.processOrder()` orchestrates payment → payment record → invoice → per-item licenses via licensing API → fire-and-forget emails → notification → order `completed`; `OrderEvent` rows at each step.
 - **Database layer:** Prisma client, used directly in routes/services (no repository layer).
-- **External integrations:** Licensing platform (REST, token auth, 55-min token cache, retries), SMTP2GO via Nodemailer, Stripe (optional).
+- **External integrations:** Licensing platform (REST, token auth, 55-min token cache, retries), SMTP2GO via Nodemailer (with IP/port probing), Stripe (optional).
 - **Auth layer:** JWT Bearer; `requireAuth` re-loads the user and checks `isActive`; `requireAdmin` allows `admin`/`super_admin`.
 
 Customer purchase data flow: `CheckoutPage` → `POST /api/checkout/place` → order + items created, cart cleared → `processOrder` → payment → `confirmed` → invoice → licenses (with `PENDING-*` local fallback if the licensing API is down) → 3 emails → notification → `completed`.
 
 ## 5. Railway / Deployment Architecture
 
-- **Railway configuration:** `packages/backend/railway.json` — project `celebrated-courage`, environment `production`, service `woven-model-purchase-system`. Nixpacks builder; start command `npx prisma generate && npx prisma db push --accept-data-loss && npx tsx src/index.ts`; health check `/api/health`; restart on failure. Matching `Procfile` exists.
+- **Railway configuration:** `packages/backend/railway.json` — project `celebrated-courage`, environment `production`, service `woven-model-purchase-system`; Nixpacks builder; health check `/api/health`; restart on failure. Matching `Procfile` exists.
+- **Start command (current):** `npx prisma generate && npx tsx src/index.ts` — **`prisma db push` has been removed**. Previously the start command included `prisma db push --accept-data-loss`, which dropped the shared DB's licensing tables on deploy and broke license generation. Deploys no longer modify the schema.
 - **Single service:** Railway hosts the backend, which serves the built React SPA — API and storefront live in one service.
-- **Database:** hosted on Railway — `prisma db push` applies the PostgreSQL schema at boot. The local SQLite references in docs are inconsistent with the committed Prisma schema.
-- **Environment variables:** set in the Railway dashboard (`PORT`, `DATABASE_URL`, `JWT_SECRET`, `LICENSING_API_URL`, `LICENSING_API_KEY`, `STRIPE_SECRET_KEY`, `SMTP_*`, `FRONTEND_URL`, `CORS_ORIGINS`, `TAX_RATE`, `ADMIN_*`). `.env.example` documents these.
-- **Licensing platform** is a separately hosted application; deployment details and account relationship with this project could not be confirmed from this repo.
-- Deployment trigger (automatic GitHub connection vs manual) — not confirmable from the repo. Git remote: `github.com/Heeroyuy1/woven-model-purchase-system`.
+- **Database:** hosted on Railway (PostgreSQL), **shared with the Licensing Platform**. Schema changes must be applied explicitly (never automated at boot).
+- **Environment variables:** set in the Railway dashboard (`PORT`, `DATABASE_URL`, `JWT_SECRET`, `LICENSING_API_URL`, `LICENSING_API_KEY`, `STRIPE_SECRET_KEY`, `SMTP_*`, `FRONTEND_URL`, `CORS_ORIGINS`, `TAX_RATE`, `ADMIN_*`, `BACKUP_EMAIL`). `.env.example` documents these.
+- **Licensing platform:** separately hosted Railway service; it shares the same PostgreSQL instance.
+- **Deploy flow:** push to `master` (GitHub) → Railway deploy (auto/`--from-source` redeploys). Verified: `railway redeploy --service woven-model-purchase-system --environment production --yes --from-source` works.
 
 ## 6. Purchasing Workflow (as implemented)
 
@@ -84,7 +88,7 @@ Customer purchase data flow: `CheckoutPage` → `POST /api/checkout/place` → o
    - Payment (Stripe real/simulated; PayPal simulated) → on failure order is `cancelled`.
    - Order → `confirmed`; invoice created (`INV-<orderNumber>`, `paid`).
    - Per-item license via licensing API (perpetual for perpetual/enterprise/developer; else 365-day); `PENDING-*` local license on failure.
-   - Emails fire-and-forget (confirmation, license delivery, thank-you).
+   - Emails fire-and-forget (confirmation, license delivery with the **product name**, thank-you).
    - `order_completed` notification; order status → `completed`.
 6. Customer post-purchase — portal dashboard, orders (expandable license keys), licenses (copy-to-clipboard), profile (edit fields, change password).
 7. Cancellation — only while `pending`.
@@ -110,9 +114,11 @@ The workflow **stops after license delivery + email**. No approval workflow, ven
 - **Licenses (admin):** list, generate (licensing API), revoke (local DB only).
 - **Coupons (admin):** full CRUD; validation (active/expiry/max-uses/min-order, percentage/fixed).
 - **Reports (admin):** sales (daily/monthly, revenue/orders/AOV, bar chart), products (revenue/units/orders), licenses (total/status/type/last-30-days).
-- **Email:** 3 branded HTML templates; SMTP2GO delivery; `EmailLog` table; admin email-logs endpoint.
+- **Email:** 3 branded HTML templates; SMTP2GO delivery with startup IP/port probing; `EmailLog` table; admin email-logs endpoint.
+- **Database backups:** full DB (all 18 tables) → gzipped JSON emailed to `BACKUP_EMAIL` (default `ceo@wovenmodel.com`) daily + 60s after boot + on demand via `POST /api/admin/backup` (admin auth). Read-only Prisma queries — never modifies the DB.
 - **Portal:** dashboard, orders, licenses, profile. Backend portal endpoints (downloads/notifications/support) exist but the frontend does not call them.
-- **Health:** `GET /api/health`. **Seed:** admin + demo user, 5 products, `WELCOME10`, 3 email templates.
+- **Health:** `GET /api/health`. **Seed:** admin + demo user, products, `WELCOME10`, 3 email templates.
+- **End-to-end purchase test script:** `test-purchase.ts` in the repo root (register/login → cart → order → prints order/invoice/license; system emails the buyer).
 
 ## 9. Feature Completion Matrix
 
@@ -129,9 +135,10 @@ The workflow **stops after license delivery + email**. No approval workflow, ven
 | Search | **Partially Complete** | Product search; admin order/customer search. No other entities searchable. |
 | Audit History | **Partially Complete** | `OrderEvent` timeline; global `AuditLog` model never written. |
 | Attachments / Documents / Notes | **Not Present** | No upload/attachment; `Download` model never queried; portal downloads synthesize hardcoded URLs. |
-| Licensing (integration) | **Partially Complete** | License generation integrated; local `License` mirror + `PENDING-` fallback; no validation/activation/expiry-check/trial flow here; local-only revoke; `licensingUserId` never set (falls back to 1). |
+| Licensing (integration) | **Complete** (generation, live-verified) | License generation integrated and verified end-to-end in production (real keys issued); local `License` mirror + `PENDING-` fallback; no validation/activation/expiry-check/trial flow here; local-only revoke; `licensingUserId` falls back to 1. |
 | Authentication | **Complete** (core) | Register/login/JWT/roles. No email verification flow, no password reset, no MFA. |
-| Integrations | See §14 | Licensing (implemented), SMTP2GO email (implemented), Stripe (partial), PayPal (stub). |
+| Integrations | See §14 | Licensing (implemented + live-verified), SMTP2GO email (implemented + live-verified), Stripe (partial), PayPal (stub). |
+| Database Backups | **Complete** | `backupService.ts` + `routes/backup.ts` + scheduler; verified delivering to ceo@wovenmodel.com. |
 | Trials | **Partially Complete** | `trialAvailable`/`trialDays` fields + UI badge; no trial license creation. |
 | Subscriptions | **Stub / Placeholder** | Model exists; nothing creates/manages them. |
 | Reviews | **Stub / Placeholder** | Model exists; no UI or routes. |
@@ -140,17 +147,18 @@ The workflow **stops after license delivery + email**. No approval workflow, ven
 
 ## 10. Database
 
-- **Technology:** PostgreSQL (Prisma `provider = "postgresql"`). No committed migrations — schema applied via `prisma db push` (including on Railway with `--accept-data-loss`).
+- **Technology:** PostgreSQL (Prisma `provider = "postgresql"`). Shared with the Licensing Platform on Railway. No committed migrations — schema applied via `prisma db push` explicitly (no longer automatic at deploy).
 - **Models (18):** Customer, Product, CartItem, Order, OrderItem, Invoice, Payment, License, Subscription, Coupon, OrderEvent, ProductReview, SupportRequest, EmailTemplate, EmailLog, Notification, AuditLog, Download — all `@@map("purchase_*")`.
 - **Keys:** UUID PKs; unique on email, product code, order number, invoice number, license key, coupon code, `CartItem(customerId, productId)`, `ProductReview(customerId, productId)`, `Subscription.licenseId`.
 - **JSON-as-string storage:** many Product fields stored as JSON strings, parsed inconsistently across public vs admin routes.
 - **Unused schema:** `AuditLog` (never written), `Download` (never queried), `EmailTemplate` (seeded but email service uses TS template modules), `Subscription`/`ProductReview` (no code paths).
 - **Seeding:** `src/seed.ts` + exposed `POST /api/seed` route guarded by a default key (`seed-me` — `SEED_KEY` env not implemented in `config/env.ts`). It reseeds the admin password from code.
+- **Backups:** `backupService.ts` reads all 18 tables via prisma, gzips JSON, emails via SMTP2GO. Triggered daily + 60s after boot + admin `POST /api/admin/backup`.
 
 ## 11. Security
 
-- **Present:** helmet (CSP/COEP disabled), CORS allowlist, global rate limit (200 req/min), Zod validation on auth/checkout, bcrypt(12), JWT expiry 7d, `requireAuth` re-validates user + `isActive`, admin role gate, API client clears token on 401, structured Prisma/JWT error mapping.
-- **Findings (no changes made beyond the email work):**
+- **Present:** helmet (CSP/COEP disabled), CORS allowlist, global rate limit (200 req/min), Zod validation on auth/checkout, bcrypt(12), JWT expiry 7d, `requireAuth` re-validates user + `isActive`, admin role gate, API client clears token on 401, structured Prisma/JWT error mapping. Backup route is admin-only.
+- **Findings (no changes made beyond the email/licensing work):**
   - Default `JWT_SECRET` = `change-me` if env unset.
   - `POST /api/seed` accepts a default key and reseeds admin from code.
   - Unknown `/api/*` paths return the SPA HTML with HTTP 200 (catch-all masks broken API calls).
@@ -163,6 +171,7 @@ The workflow **stops after license delivery + email**. No approval workflow, ven
 The Purchasing System is a **consumer** of the external Woven Model Licensing Platform:
 - `licensingService.ts` implements a client with token auth (login, 55-min cached token, 401 re-auth, 2 retries). Only `generateLicense` is used; `createCustomer` is never called (so licensing users are never created/synced; `userId` falls back to 1).
 - Local `License` model mirrors server licenses (`licensingLicenseId`), stores key/type/status/activations/expiry/perpetual; `PENDING-*` placeholders when the API is unreachable.
+- **Verified live (Aug 2026):** after fixing Railway env (`LICENSING_API_URL` pointed at `localhost`; admin credentials mismatch) and recovering the licensing tables (previously dropped by `prisma db push --accept-data-loss`), orders generate real license keys (`XZEKG-5M5MW-QYLHL-T76SN`, `U5XNM-P3TA9-Z3WXZ-ANZJ8`, `5CJTA-PBZ85-NAZ34-PS65G`).
 - No validation, activation, deactivation, trial, or offline behavior lives in this project — those are on the licensing platform.
 
 ## 13. UI / UX
@@ -176,8 +185,8 @@ The Purchasing System is a **consumer** of the external Woven Model Licensing Pl
 
 | Integration | Status | Evidence |
 | ----------- | ------ | -------- |
-| Woven Model Licensing Platform | **Fully implemented (generation)** | `licensingService.ts` used in order service and admin generate. |
-| SMTP2GO (email) | **Implemented** | `emailService.ts` via Nodemailer; `EmailLog` retention. |
+| Woven Model Licensing Platform | **Fully implemented, live-verified** | `licensingService.ts` used in order service and admin generate; real keys issued in production tests. |
+| SMTP2GO (email) | **Fully implemented, live-verified** | `emailService.ts` via Nodemailer with startup IP/port probing; `EmailLog` retention; order + backup emails confirmed in Railway logs. |
 | Stripe | **Partially implemented** | Real when key set; otherwise simulated; frontend sends hardcoded `tok_visa`; Elements UI placeholder-only. |
 | PayPal | **Stub** | Always simulated success; no SDK. |
 | Microsoft Entra / Graph / 365 / SharePoint / Outlook / Teams / Power Automate / ERP / accounting | **Not Present** | No evidence in code or config. |
@@ -185,19 +194,30 @@ The Purchasing System is a **consumer** of the external Woven Model Licensing Pl
 
 ## 15. Logging / Audit
 
-- **Logging:** backend stdout (startup banner, licensing retry warnings, seed output, email results); global error handler logs every error; `uncaughtException` exits.
+- **Logging:** backend stdout (startup banner, licensing retry warnings, backup results, email results); global error handler logs every error; `uncaughtException` exits.
 - **Email logs:** `EmailLog` table records every send (to/subject/template/status/error/orderId); admin endpoint returns last 100.
+- **Backup logs:** `[BackupService]` lines confirm scheduled/on-demand backup + email delivery.
 - **Order audit:** `OrderEvent` rows for created/paid/license_generated/email_sent/completed/cancelled/payment_failed and admin status changes.
 - **Unused:** global `AuditLog` model.
-- **Railway logs:** exist by platform default; nothing in the repo reads them.
+- **Railway logs:** used for production verification (`railway logs -s woven-model-purchase-system`).
 
 ## 16. Testing
 
-**No automated tests exist.** No test directories/files, no Jest/Vitest/Cypress/Playwright, no test scripts. The only verification is manual curl/health checks documented in the RUNBOOK.
+- **No unit/integration/E2E test framework exists** (no Jest/Vitest/Cypress/Playwright, no test scripts).
+- **Added:** `test-purchase.ts` — an end-to-end purchase test script in the repo root. It registers/logs in a buyer, adds a product, places an order (simulated Stripe payment), and prints the order number, invoice, and license key; the system emails the confirmation/license/thank-you to the buyer.
+- **Verified production runs (Aug 14, 2026):** multiple E2E purchases completed with real licenses and all emails delivered (flowtest buyers + judewow@gmail.com, order `ORD-MSSXMTU6-502H` / license `5CJTA-PBZ85-NAZ34-PS65G`). Daily backup email verified at ceo@wovenmodel.com.
+- The only other verification is manual curl/health checks documented in the RUNBOOK.
 
 ## 17. Current Development Progress
 
 The system is **largely built and feature-complete for a v1 commerce product**, with an end-to-end customer path and substantial admin tooling. It appears to be in late-stage / launch-preparation (Railway config, Procfile, built SPA committed, PLAYBOOK launch checklist).
+
+**August 2026 production fixes (verified):**
+1. **Licensing failures resolved** — fixed Railway env (`LICENSING_API_URL`, `ADMIN_EMAIL`/`ADMIN_PASSWORD`) and recovered licensing tables; real licenses now generate.
+2. **Deploy-time data-loss eliminated** — removed `prisma db push --accept-data-loss` from `railway.json`/`Procfile` start commands; the shared DB is no longer wiped by deploys.
+3. **Email delivery fixed on Railway** — SMTP2GO host resolves to many IPs, some unreachable from Railway's network; email service now probes IPs across ports 2525/587/465/8025 at startup and uses a reachable pair (verified: `45.79.114.202:8025`).
+4. **License-email product name fixed** — `orderService` now maps `productId → productName` for the license-delivery email ("Your License for Conquest Trading Engine is Ready" instead of "enterprise").
+5. **Automated DB backups added** — emailed to `BACKUP_EMAIL` (ceo@wovenmodel.com) daily + on boot + on demand.
 
 **Confirmed gaps (from code):**
 1. **Frontend/backend API contract mismatches (broken features):**
@@ -209,23 +229,24 @@ The system is **largely built and feature-complete for a v1 commerce product**, 
    - Admin generate-license modal sends `{productId, customerEmail}` — backend expects `{productCode, customerId}` → **manual license generation fails at product lookup**.
    - Admin order modal calls `getOrder()` which is customer-scoped → **admin cannot view another customer's order detail**.
    - Checkout coupon reads `res.discountPercent/discountAmount` — backend returns `{valid, discount, ...}` → **discount never displayed** (still applied at placement).
-2. **Email bug:** `orderService` passes `licenseType` as the product name in license-delivery emails.
-3. **Payment:** always simulated from the UI (`tok_visa`); no real card entry.
-4. **Trials, subscriptions, reviews, audit, support, downloads, notifications** — models/fields exist but are unpopulated or unwired.
-5. Docs vs implementation inconsistencies (SQLite docs vs PostgreSQL schema; SendGrid/Gmail mentions vs SMTP2GO).
+2. **Payment:** always simulated from the UI (`tok_visa`); no real card entry.
+3. **Trials, subscriptions, reviews, audit, support, downloads, notifications** — models/fields exist but are unpopulated or unwired.
+4. Docs vs implementation inconsistencies (SQLite docs vs PostgreSQL schema; SendGrid/Gmail mentions vs SMTP2GO).
 
 ## 18. Facts / Observations
 
 1. The project name describes selling Woven Model software, not a B2B requisition/purchasing system.
 2. Workspace packages: `backend`, `frontend`, `design-system`; root scripts run dev/build for all.
-3. `railway.json` + `Procfile` run `prisma db push --accept-data-loss` at every start.
+3. `railway.json` + `Procfile` previously ran `prisma db push --accept-data-loss` at every start — **removed Aug 2026** after it dropped the shared DB's licensing tables twice, breaking license generation. The failed `db push` (without `--accept-data-loss`) now refuses to start rather than wiping data.
 4. `app.get('*')` catch-all returns the SPA for unknown paths, including unknown `/api/*`.
-5. SMTP2GO DNS quirk: Node's c-ares resolver (`dns.resolve4`) returns `EFORMERR` for `mail.smtp2go.com` (malformed additional TXT record in the DNS response). The email service resolves the host with `dns.lookup` (OS resolver) and connects to the IP with `tls.servername` to keep SNI correct. Confirmed working: SMTP2GO accepted test emails (250 OK) to ceo@wovenmodel.com.
+5. SMTP2GO DNS quirk: Node's c-ares resolver (`dns.resolve4`) returns `EFORMERR` for `mail.smtp2go.com` (malformed additional TXT record in the DNS response). The email service resolves the host with `dns.lookup` (OS resolver) and probes IP:port pairs (2525/587/465/8025) at startup, connecting with `tls.servername` to keep SNI correct. Confirmed working in production (multiple emails delivered).
 6. Hardcoded default admin credentials, licensing API key, and SMTP app password appear in plaintext in docs/.env files. Values intentionally not reproduced here.
 7. `WELCOME10` coupon seeds with `maxUses: 100`; `usedCount` is never incremented on redemption.
 8. `checkout/place` silently ignores invalid coupons; the frontend never calls `/checkout/calculate`.
 9. Cart decrement can push quantity to 0 or below (no lower-bound guard).
 10. `frontend/public` and `backend/public` contain copies of the marketing site and brand PNGs; the SPA favicon `/vite.svg` is referenced but absent.
 11. `design-system` package builds but is not imported by the frontend; components/icons empty.
-12. No CI, no tests, no migrations directory, no Dockerfile — deployment relies on Nixpacks + `prisma db push`.
+12. No CI, no tests framework, no migrations directory, no Dockerfile — deployment relies on Nixpacks.
 13. Orders still complete even when license generation fails — by design, to avoid blocking purchases.
+14. The Railway Postgres instance is **shared between the purchase system and the licensing platform**; schema changes on one can affect the other.
+15. Backups (`backupService.ts`) cover all 18 tables in a single gzipped JSON payload and are delivered over the same SMTP2GO pipeline used for transactional email.
