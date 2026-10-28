@@ -21,11 +21,24 @@
 ### Deploying new code
 ```bash
 # From the repo root
+
+# 1. If you changed anything under packages/frontend, rebuild the bundle that
+#    Railway actually serves. The Railway build does NOT build the frontend.
+npm run build:public
+
+# 2. Commit and push
 git add -A
 git commit -m "describe change"
 git push origin master
 # Railway auto-deploys from the GitHub branch (master)
 ```
+
+> **Frontend changes do not ship on their own.** `railway.json` builds with
+> `npm install && npx prisma generate` — it never runs the Vite build. The
+> storefront is served from the committed `packages/backend/public/` folder, so
+> `npm run build:public` must be run and its output committed, or production
+> keeps serving the previous bundle (identifiable by the old hashed filename in
+> `packages/backend/public/index.html`).
 
 ### Manual redeploy
 ```bash
@@ -121,7 +134,16 @@ taskkill /f /fi "IMAGENAME eq node.exe"
 **Cart/Checkout broken:**
 1. Check browser console / backend logs for route errors.
 2. Cart endpoints: `/cart/add` (POST), `/cart` (GET), `/cart/:productId` (DELETE).
-3. Checkout: POST `/checkout/calculate`, POST `/checkout/place`.
+3. Checkout flow: `GET /checkout/config` → `POST /checkout/calculate` → `POST /checkout/create-payment-intent` → Stripe Elements → `POST /checkout/place`.
+4. `GET /api/checkout/config` is the quickest probe — it must return `"stripeMode":"live"` and a `pk_live_...` key. A `401` there means the deploy predates the Stripe rewrite.
+
+**Payments failing / card form blank:**
+1. `GET /api/checkout/config` — is `stripeEnabled` true and is the key the right mode?
+2. `503` from create-payment-intent → `STRIPE_SECRET_KEY` not set on that environment.
+3. Server exits at boot with `Stripe configuration error` → `sk_live_` and `pk_test_` (or the reverse) were mixed. Both keys must match.
+4. `402` from `/checkout/place` → the PaymentIntent had not succeeded. Confirm the charge in Stripe Dashboard → Payments.
+5. Webhook returning `503` → `STRIPE_WEBHOOK_SECRET` missing. `400` → signature mismatch (wrong secret for that endpoint).
+6. Stripe Dashboard → Developers → Webhooks → the destination shows delivery attempts and response codes.
 
 **Licenses not generating / PENDING- keys:**
 1. Licensing server up? https://woven-licensing-production.up.railway.app
@@ -170,7 +192,10 @@ taskkill /f /fi "IMAGENAME eq node.exe"
 | `JWT_SECRET` | Yes | Auth signing key | Change in production |
 | `LICENSING_API_URL` | Yes | Licensing server URL | `https://woven-licensing-production.up.railway.app/api/v1` |
 | `LICENSING_API_KEY` | Yes | Licensing API key / admin password | `K23HzAshHAZEPqyI4` |
-| `STRIPE_SECRET_KEY` | For payments | Stripe secret | `sk_live_...` (empty = demo) |
+| `STRIPE_SECRET_KEY` | Yes (live) | Stripe secret key — determines report mode | `sk_live_...` / `sk_test_...` |
+| `STRIPE_PUBLISHABLE_KEY` | Yes (live) | Stripe publishable key — **must match the secret key's mode** | `pk_live_...` / `pk_test_...` |
+| `STRIPE_WEBHOOK_SECRET` | Yes (live) | Signing secret for `/api/webhooks/stripe` | `whsec_...` |
+| `PURCHASE_NOTIFICATION_EMAIL` | No | Gets a "New Sale" email on every completed order | `ceo@wovenmodel.com` |
 | `SMTP_HOST` | Yes | SMTP2GO host | `mail.smtp2go.com` |
 | `SMTP_PORT` | Yes | SMTP2GO port | `2525` |
 | `SMTP_USER` | Yes | SMTP2GO username | `wovenmodel.com` |
@@ -188,10 +213,18 @@ taskkill /f /fi "IMAGENAME eq node.exe"
 
 ### Running the end-to-end purchase test
 ```bash
-# From repo root — buys a product and emails confirmation + license + thank-you
-npx tsx test-purchase.ts judewow@gmail.com        # CONQUEST (default)
+# From repo root — creates a real PaymentIntent, confirms it (test mode only),
+# fulfils the order and emails confirmation + license + thank-you + owner notice
+npx tsx test-purchase.ts judewow@gmail.com        # default product
 npx tsx test-purchase.ts judewow@gmail.com PII    # any product code
 ```
+
+Card handling:
+- `sk_test_` key → the script confirms with Stripe's `pm_card_visa`, so the full flow runs unattended.
+- `sk_live_` key → the script **never charges a card**. It creates the PaymentIntent, stops, and prints the command to finish after paying in the browser:
+  ```bash
+  npx tsx test-purchase.ts judewow@gmail.com HARPER pi_3Abc...
+  ```
 
 ### Adding a new product
 1. Sign in as admin at the storefront.
@@ -221,4 +254,4 @@ npx tsx test-purchase.ts judewow@gmail.com PII    # any product code
 
 ---
 
-*© 2026 Woven Model. Last updated: August 14, 2026*
+*© 2026 Woven Model. Last updated: October 27, 2026*

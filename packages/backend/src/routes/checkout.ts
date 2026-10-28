@@ -2,164 +2,181 @@ import { Router, Request, Response, NextFunction } from 'express';
 import { PrismaClient } from '@prisma/client';
 import { requireAuth } from '../middleware/auth';
 import { validate } from '../middleware/validate';
-import { calculateSchema, placeOrderSchema } from '../validators/checkout';
-import { validateCoupon } from '../services/couponService';
-import { processOrder } from '../services/orderService';
+import {
+  calculateSchema,
+  createPaymentIntentSchema,
+  placeOrderSchema,
+} from '../validators/checkout';
+import { CheckoutError, calculateCartTotals } from '../services/checkoutTotals';
+import {
+  createPaymentIntentForOrder,
+  verifyPaymentIntentForOrder,
+} from '../services/paymentService';
+import {
+  cancelStalePendingOrders,
+  createPendingOrder,
+  fulfillPaidOrder,
+} from '../services/orderService';
 import { env } from '../config/env';
+import { getStripeMode, isStripeConfigured } from '../services/stripeClient';
 
 const router = Router();
 const prisma = new PrismaClient();
 
+const ORDER_INCLUDE = {
+  items: true,
+  licenses: true,
+  payments: true,
+  invoices: true,
+} as const;
+
+function handleCheckoutError(error: any, res: Response, next: NextFunction): void {
+  if (error instanceof CheckoutError) {
+    res.status(error.statusCode).json({ error: error.message });
+    return;
+  }
+  next(error);
+}
+
+/**
+ * Public configuration for the checkout page.
+ * A publishable key is safe to expose; serving it from the backend keeps
+ * Stripe.js in the same mode as the secret key without a frontend rebuild.
+ */
+router.get('/config', (_req: Request, res: Response) => {
+  const mode = getStripeMode();
+
+  res.json({
+    stripeMode: mode,
+    stripeEnabled: mode !== 'unconfigured',
+    publishableKey: env.STRIPE_PUBLISHABLE_KEY || null,
+  });
+});
+
 router.use(requireAuth);
 
-// POST /calculate - calculate totals
-router.post('/calculate', async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const userId = req.user!.id;
-    const { couponCode } = req.body;
-
-    // Get cart items
-    const cartItems = await prisma.cartItem.findMany({
-      where: { customerId: userId },
-      include: { product: true },
-    });
-
-    if (cartItems.length === 0) {
-      res.status(400).json({ error: 'Cart is empty' });
-      return;
+// POST /calculate - authoritative cart totals
+router.post(
+  '/calculate',
+  validate(calculateSchema),
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const totals = await calculateCartTotals(req.user!.id, req.body.couponCode);
+      res.json(totals);
+    } catch (error) {
+      handleCheckoutError(error, res, next);
     }
+  }
+);
 
-    const subtotal = cartItems.reduce((sum, item) => sum + item.product.pricing * item.quantity, 0);
-
-    // Validate coupon
-    let discount = 0;
-    let appliedCoupon: any = null;
-    if (couponCode) {
-      const result = await validateCoupon(couponCode, subtotal);
-      if (result.valid) {
-        discount = result.discount!;
-        appliedCoupon = { code: couponCode, discount, type: result.discountType };
-      } else {
-        res.status(400).json({ error: result.error });
+/**
+ * POST /create-payment-intent
+ * Prices the cart, snapshots it into a pending order, then opens a Stripe
+ * PaymentIntent for exactly that amount.
+ */
+router.post(
+  '/create-payment-intent',
+  validate(createPaymentIntentSchema),
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      if (!isStripeConfigured()) {
+        res.status(503).json({ error: 'Card payments are not configured. Please contact support.' });
         return;
       }
-    }
 
-    const taxRate = env.TAX_RATE;
-    const taxableAmount = subtotal - discount;
-    const taxAmount = Math.round(taxableAmount * taxRate * 100) / 100;
-    const total = Math.round((taxableAmount + taxAmount) * 100) / 100;
+      const userId = req.user!.id;
+      const { couponCode, billingAddress } = req.body;
 
-    res.json({
-      items: cartItems.map(item => ({
-        productId: item.productId,
-        productName: item.product.name,
-        quantity: item.quantity,
-        unitPrice: item.product.pricing,
-        totalPrice: item.product.pricing * item.quantity,
-      })),
-      subtotal: Math.round(subtotal * 100) / 100,
-      discount,
-      coupon: appliedCoupon,
-      taxRate,
-      taxAmount,
-      total,
-    });
-  } catch (error) {
-    next(error);
-  }
-});
+      const totals = await calculateCartTotals(userId, couponCode);
 
-// POST /place - place order
-router.post('/place', validate(placeOrderSchema), async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const userId = req.user!.id;
-    const { paymentMethod, paymentToken, couponCode, billingAddress } = req.body;
+      // Drop any earlier unpaid attempt so orders and authorisations do not pile up.
+      await cancelStalePendingOrders(userId);
 
-    // Get cart items
-    const cartItems = await prisma.cartItem.findMany({
-      where: { customerId: userId },
-      include: { product: true },
-    });
+      const order = await createPendingOrder({ customerId: userId, totals, billingAddress });
 
-    if (cartItems.length === 0) {
-      res.status(400).json({ error: 'Cart is empty' });
-      return;
-    }
-
-    const subtotal = cartItems.reduce((sum, item) => sum + item.product.pricing * item.quantity, 0);
-
-    // Validate coupon if provided
-    let discount = 0;
-    if (couponCode) {
-      const result = await validateCoupon(couponCode, subtotal);
-      if (result.valid) {
-        discount = result.discount!;
-      }
-    }
-
-    const taxRate = env.TAX_RATE;
-    const taxableAmount = subtotal - discount;
-    const taxAmount = Math.round(taxableAmount * taxRate * 100) / 100;
-    const total = Math.round((taxableAmount + taxAmount) * 100) / 100;
-
-    // Generate order number
-    const orderNumber = `ORD-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
-
-    // Create order
-    const order = await prisma.order.create({
-      data: {
-        orderNumber,
-        customerId: userId,
-        subtotal,
-        taxAmount,
-        discountAmount: discount,
-        total,
-        couponCode: couponCode || null,
-        billingAddress: JSON.stringify(billingAddress),
-        status: 'pending',
-        items: {
-          create: cartItems.map(item => ({
-            productId: item.productId,
-            productName: item.product.name,
-            productCode: item.product.code,
-            quantity: item.quantity,
-            unitPrice: item.product.pricing,
-            totalPrice: item.product.pricing * item.quantity,
-            licenseType: item.product.licenseType,
-          })),
-        },
-      },
-      include: { items: true },
-    });
-
-    // Log order event
-    await prisma.orderEvent.create({
-      data: {
+      const intent = await createPaymentIntentForOrder({
         orderId: order.id,
-        event: 'created',
-        details: JSON.stringify({ itemCount: cartItems.length, total }),
-      },
-    });
-
-    // Clear cart
-    await prisma.cartItem.deleteMany({ where: { customerId: userId } });
-
-    // Process order (payment, license generation, emails)
-    try {
-      const result = await processOrder(order.id, paymentMethod, paymentToken);
-      res.status(201).json({ order: result.order });
-    } catch (error: any) {
-      // Order was created but processing failed
-      res.status(200).json({
-        order,
-        warning: error.message,
-        message: 'Order created but processing encountered an issue. Our team will follow up.',
+        customerId: userId,
+        customerEmail: req.user!.email,
+        totals,
       });
+
+      await prisma.order.update({
+        where: { id: order.id },
+        data: { paymentId: intent.id, paymentMethod: 'stripe' },
+      });
+
+      res.json({
+        orderId: order.id,
+        orderNumber: order.orderNumber,
+        paymentIntentId: intent.id,
+        clientSecret: intent.clientSecret,
+        publishableKey: env.STRIPE_PUBLISHABLE_KEY || null,
+        stripeMode: getStripeMode(),
+        totals,
+      });
+    } catch (error) {
+      handleCheckoutError(error, res, next);
     }
-  } catch (error) {
-    next(error);
   }
-});
+);
+
+/**
+ * POST /place
+ * Called after Stripe.js confirms the card. The PaymentIntent is re-read from
+ * Stripe and the settled amount is checked against the stored order before
+ * anything is fulfilled, so this endpoint cannot be used to obtain goods free.
+ */
+router.post(
+  '/place',
+  validate(placeOrderSchema),
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const userId = req.user!.id;
+      const { paymentIntentId } = req.body;
+
+      const order = await prisma.order.findFirst({ where: { paymentId: paymentIntentId } });
+
+      if (!order) {
+        res.status(404).json({ error: 'No order is associated with this payment.' });
+        return;
+      }
+
+      if (order.customerId !== userId) {
+        res.status(403).json({ error: 'This payment belongs to a different customer.' });
+        return;
+      }
+
+      // The webhook may already have fulfilled it - report the same result.
+      if (order.status !== 'pending') {
+        if (order.status === 'processing') {
+          res.status(202).json({ order, pending: true, message: 'Payment is being finalised.' });
+          return;
+        }
+
+        const existing = await prisma.order.findUnique({
+          where: { id: order.id },
+          include: ORDER_INCLUDE,
+        });
+
+        res.json({ order: existing, alreadyProcessed: true });
+        return;
+      }
+
+      const payment = await verifyPaymentIntentForOrder({
+        paymentIntentId,
+        expectedAmountInCents: Math.round(order.total * 100),
+        expectedCurrency: order.currency,
+        expectedCustomerId: userId,
+      });
+
+      const fulfilled = await fulfillPaidOrder(order.id, payment);
+
+      res.status(201).json({ order: fulfilled });
+    } catch (error) {
+      handleCheckoutError(error, res, next);
+    }
+  }
+);
 
 export default router;

@@ -34,7 +34,7 @@ Production-ready commerce platform — from product discovery through payment, l
 | **Database** | PostgreSQL on Railway (Prisma; single shared instance with the licensing platform) |
 | **Licensing** | FastAPI server on Railway (`woven-licensing-production.up.railway.app`) |
 | **Email** | SMTP2GO via Nodemailer — probes reachable IP:port at startup (`mail.smtp2go.com`, ports 2525/587/465/8025) |
-| **Payments** | Stripe/PayPal (abstracted processor pattern) |
+| **Payments** | Stripe — PaymentIntents + Stripe Elements, 3-D Secure / SCA, signature-verified webhooks |
 | **Auth** | JWT (bcrypt, 7-day expiry) |
 
 ## Project Structure
@@ -125,7 +125,10 @@ All configuration is via environment variables (`packages/backend/.env` locally;
 | `JWT_SECRET` | Token signing secret | Must change in production |
 | `LICENSING_API_URL` | Licensing server | `https://woven-licensing-production.up.railway.app/api/v1` |
 | `LICENSING_API_KEY` | Licensing API key / admin password | `K23HzAshHAZEPqyI4` |
-| `STRIPE_SECRET_KEY` | Stripe payment key | (empty = demo mode) |
+| `STRIPE_SECRET_KEY` | Stripe secret key — its prefix (`sk_live_` / `sk_test_`) sets the payment mode | required for payments |
+| `STRIPE_PUBLISHABLE_KEY` | Stripe publishable key — must match the secret key's mode or the server refuses to boot | required for payments |
+| `STRIPE_WEBHOOK_SECRET` | Signing secret for `/api/webhooks/stripe` | required in live mode |
+| `PURCHASE_NOTIFICATION_EMAIL` | Internal "New Sale" email recipient | `ceo@wovenmodel.com` |
 | `SMTP_HOST` | SMTP2GO host | `mail.smtp2go.com` |
 | `SMTP_PORT` | SMTP2GO port | `2525` |
 | `SMTP_USER` | SMTP2GO username | `wovenmodel.com` |
@@ -147,12 +150,18 @@ All configuration is via environment variables (`packages/backend/.env` locally;
 
 ### Protected (auth required)
 - `GET/POST/DELETE /api/cart` — cart management
-- `POST /api/checkout/calculate` — price calculation
-- `POST /api/checkout/place` — place order
+- `POST /api/checkout/calculate` — authoritative cart totals (subtotal, discount, tax, total)
+- `POST /api/checkout/create-payment-intent` — snapshot the cart into a pending order and open a Stripe PaymentIntent
+- `POST /api/checkout/place` — verify the PaymentIntent with Stripe, then fulfil the order
+
 - `GET /api/orders` — my orders
 - `GET /api/licenses/user` — my licenses
 - `GET/PUT /api/portal/profile` — profile management
 - `POST /api/portal/support` — create support ticket
+
+### Public config / webhooks
+- `GET /api/checkout/config` — `{ stripeMode, stripeEnabled, publishableKey }` (no auth)
+- `POST /api/webhooks/stripe` — Stripe event destination; signature-verified, raw body, mounted before the JSON parser
 
 ### Admin (admin role required)
 - `GET /api/admin/stats` — dashboard stats
@@ -185,10 +194,18 @@ npx tsx test-purchase.ts judewow@gmail.com        # buys CONQUEST (default) for 
 npx tsx test-purchase.ts someone@example.com PII  # buys a different product
 ```
 
-It registers (or logs in) the buyer, adds the product to the cart, places the order with simulated Stripe payment (`tok_visa`), and prints the order number, invoice, and license key. The system then emails the buyer:
+It registers (or logs in) the buyer, adds the product to the cart, creates a **real Stripe PaymentIntent** for the total, confirms it, calls `/api/checkout/place` (which re-verifies the payment with Stripe), and prints the order number, invoice, and license key.
+
+Card handling:
+- With an `sk_test_` key the script confirms using Stripe's `pm_card_visa` test card, so the whole flow runs unattended.
+- With an `sk_live_` key it **never charges a card**: it creates the PaymentIntent, stops, and prints the command to finish once the payment has been made in the browser.
+
+The system then emails the buyer:
 1. **Order Confirmation**
 2. **License Key Delivery** (with the real product name)
 3. **Thank You / Onboarding**
+
+and sends `PURCHASE_NOTIFICATION_EMAIL` (default `ceo@wovenmodel.com`) an internal **New Sale** notice containing items, totals, PaymentIntent id, Stripe receipt link, and the issued license keys.
 
 Available product codes: `CONQUEST` ($499), `STRATUM` ($299), `WMAM` ($200), `PII` (free).
 
@@ -199,6 +216,9 @@ Available product codes: `CONQUEST` ($499), `STRATUM` ($299), `WMAM` ($200), `PI
 - **Health check:** `GET /api/health`
 - **Start command:** `npx prisma generate && npx tsx src/index.ts` — **no `prisma db push`**, so deploys never wipe the shared database.
 - The service hosts both the API and the built React storefront (served from `backend/public`).
+- **The Railway build does not build the frontend.** `backend/public` holds a committed bundle, so after any change under `packages/frontend` run `npm run build:public` (Vite build + `scripts/sync-public.cjs`) and commit the output — otherwise production keeps serving the previous bundle.
+- Stripe keys must both come from the same mode (`sk_live_` + `pk_live_`); the server exits at boot if they disagree.
+- Webhook endpoint to register in Stripe: `https://woven-model-purchase-system-production.up.railway.app/api/webhooks/stripe` with the four payment/refund/dispute events.
 - The database is a Railway-hosted PostgreSQL instance **shared with the Woven Model Licensing Platform**.
 
 For deployment instructions runbooks and troubleshooting, see `RUNBOOK.md`.

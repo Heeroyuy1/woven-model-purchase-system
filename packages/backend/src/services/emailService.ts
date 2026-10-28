@@ -27,6 +27,10 @@ function canConnect(host: string, port: number, timeoutMs = 5000): Promise<boole
 import { orderConfirmationHtml } from '../templates/orderConfirmation';
 import { licenseDelivery } from '../templates/licenseDelivery';
 import { thankYou } from '../templates/thankYou';
+import {
+  purchaseNotification,
+  PurchaseNotificationData,
+} from '../templates/purchaseNotification';
 
 interface OrderConfirmationData {
   name: string;
@@ -206,6 +210,24 @@ export class EmailService {
     const subject = 'Thank You for Your Purchase!';
     const html = thankYou({ customerName: data.name });
     await this.sendMail(to, subject, html, 'thank_you');
+  }
+
+  /**
+   * Internal notification to the business owner when a purchase completes.
+   * Defaults to PURCHASE_NOTIFICATION_EMAIL (ceo@wovenmodel.com).
+   */
+  async sendPurchaseNotification(data: PurchaseNotificationData): Promise<void> {
+    const to = env.PURCHASE_NOTIFICATION_EMAIL;
+
+    if (!to) {
+      console.warn('[EmailService] PURCHASE_NOTIFICATION_EMAIL is empty - skipping owner notification');
+      return;
+    }
+
+    const subject = `New Sale — #${data.orderNumber} — $${data.total.toFixed(2)}`;
+    const html = purchaseNotification(data);
+
+    await this.sendMail(to, subject, html, 'purchase_notification', data.orderId);
   }
 
   /**

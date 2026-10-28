@@ -20,8 +20,13 @@ export const removeFromCart = (productId: string) =>
 export const clearCart = () => api.delete('/cart/all');
 
 // ─── Checkout endpoints ───
+export const getCheckoutConfig = () => api.get('/checkout/config');
+
 export const calculateCheckout = (data: Record<string, unknown>) =>
   api.post('/checkout/calculate', data);
+
+export const createPaymentIntent = (data: Record<string, unknown>) =>
+  api.post('/checkout/create-payment-intent', data);
 
 export const placeOrder = (data: Record<string, unknown>) =>
   api.post('/checkout/place', data);

@@ -19,7 +19,7 @@ The system **automates everything** — no manual intervention required for stan
 | System | Purpose | Connection |
 |--------|---------|-----------|
 | **Licensing Platform** (Railway) | License generation, activation, validation | API via `LICENSING_API_URL` |
-| **Stripe** | Payment processing (simulated in demo) | API key in `.env` |
+| **Stripe** | Card payments — PaymentIntents + Stripe Elements, 3-D Secure supported | `STRIPE_SECRET_KEY`, `STRIPE_PUBLISHABLE_KEY`, `STRIPE_WEBHOOK_SECRET` |
 | **SMTP2GO** | Email delivery (confirmations, licenses, backups) | SMTP credentials + IP/port probing at startup |
 | **PostgreSQL** (Railway) | Data storage (shared with the Licensing Platform) | Prisma ORM |
 | **Database Backups** | Full DB → gzipped JSON emailed daily + on demand | `BACKUP_EMAIL` (default `ceo@wovenmodel.com`) |
@@ -42,9 +42,9 @@ The system **automates everything** — no manual intervention required for stan
 2. Creates account or signs in
 3. Adds product(s) to cart with quantity
 4. Proceeds to checkout → fills billing info
-5. Selects payment method (Stripe/PayPal)
+5. Pays by card (Stripe Elements; 3-D Secure is handled automatically when the bank requires it)
 6. Order placed → automatic:
-   - Credit card charged (simulated with `tok_visa` unless a real Stripe key is set)
+   - Card charged through Stripe. The server then re-reads the PaymentIntent from Stripe and checks the settled amount against the stored order before anything is fulfilled — a `402` means the charge did not succeed and nothing was issued.
    - License generated on Licensing Server
    - License stored in local DB
    - Email sent: **Order Confirmation**
@@ -186,6 +186,14 @@ Access via Admin → Reports
 - No data loss — all order info is stored locally.
 - **Known issue (Aug 2026):** a `prisma db push --accept-data-loss` deploy used to drop the shared DB's licensing tables, causing `500`/`401` license-generation failures. That risk is now removed (start command has no `db push`).
 
+### If Stripe Goes Down
+- Checkout cannot complete — `/api/checkout/create-payment-intent` will fail and the buyer sees the error inline.
+- **No order is created and no license is issued**, because orders are only fulfilled after Stripe confirms the charge.
+- Existing orders are unaffected; licenses already delivered stay valid.
+- Check https://status.stripe.com, then retry the purchase.
+- If the charge succeeded but the customer's browser died before returning, the Stripe webhook (`payment_intent.succeeded`) fulfils the order automatically within seconds. If that webhook is also failing, the order stays `pending` and an admin can reconcile it from Stripe Dashboard → Payments.
+- Abandoned `pending` orders older than 24h are swept hourly and their Stripe intents cancelled automatically.
+
 ### If Email Server Goes Down
 - Order and license data is still recorded.
 - Emails are logged to `EmailLog`; admin can view failures via Admin → Email Logs.
@@ -209,9 +217,16 @@ npx tsx test-purchase.ts someone@example.com PII  # buys a different product
 The script:
 1. Registers (or logs in) the buyer
 2. Adds the product to the cart
-3. Places the order (simulated Stripe payment)
-4. Prints order number, invoice, and license key
-5. Confirms the three emails (confirmation, license, thank-you) go to the buyer's inbox
+3. Creates a real Stripe PaymentIntent for the cart total
+4. Confirms the card — **only when the key is `sk_test_`**, using Stripe's `pm_card_visa` test card
+5. Calls `/api/checkout/place`, which re-verifies the payment with Stripe before fulfilling
+6. Prints order number, invoice, and license key
+
+**Live keys are safe:** with an `sk_live_` key the script refuses to charge anything. It stops after creating the PaymentIntent and prints the command to finish afterwards, once the payment has been completed in the browser:
+
+```bash
+npx tsx test-purchase.ts judewow@gmail.com HARPER pi_3Abc...
+```
 
 **Verified production run (Aug 14, 2026):** order `ORD-MSSXMTU6-502H` (Conquest Trading Engine, $499) completed with license `5CJTA-PBZ85-NAZ34-PS65G`; all three emails delivered to judewow@gmail.com; daily backup email verified at ceo@wovenmodel.com.
 
@@ -220,10 +235,13 @@ The script:
 ## 8. Launch Checklist
 
 ### Payment Processing
-- [ ] Stripe account created and verified
-- [ ] `STRIPE_SECRET_KEY` set in `.env` / Railway (empty = demo mode)
-- [ ] Test transaction completed with `tok_visa`
-- [ ] Refund process understood
+- [ ] Stripe account activated (business details + bank account)
+- [ ] `STRIPE_SECRET_KEY` and `STRIPE_PUBLISHABLE_KEY` set in Railway — both from the same mode (`sk_live_` + `pk_live_`)
+- [ ] Webhook destination created in Stripe pointing at `/api/webhooks/stripe`; `STRIPE_WEBHOOK_SECRET` set
+- [ ] `GET /api/checkout/config` returns `"stripeMode":"live"`
+- [ ] Stripe "Send test event" returns HTTP 200
+- [ ] One real low-value purchase completed end to end (order + license + emails)
+- [ ] Refund process understood (Stripe Dashboard → Payments → Refund)
 
 ### Email Delivery
 - [ ] SMTP2GO credentials tested
@@ -267,6 +285,11 @@ The script:
 | License generation 500/401 | Licensing service's tables were dropped or creds mismatch | Redeploy licensing service (re-seeds admin); verify shared DB |
 | No emails received | SMTP2GO unreachable from Railway network | Startup probes IPs/ports (2525/587/465/8025); check `[EmailService] Using ...` log line |
 | No backup email | BACKUP_EMAIL wrong or SMTP down | Check `[BackupService]` logs; `POST /api/admin/backup` to trigger |
+| Card form never appears at checkout | Publishable key missing, or secret/publishable keys from different modes | `GET /api/checkout/config`; the server refuses to boot when the two keys disagree |
+| `402` "Payment has not completed" | Card was not actually confirmed | Finish the card form; check the PaymentIntent in the Stripe Dashboard |
+| Webhook returns `503` | `STRIPE_WEBHOOK_SECRET` not set | Add it in Railway, redeploy |
+| Server exits on boot with "Stripe configuration error" | `sk_live_` paired with `pk_test_` (or vice versa) | Use both keys from the same Stripe mode |
+| Order completed but no "New Sale" email | `PURCHASE_NOTIFICATION_EMAIL` empty or SMTP down | Check that variable; inspect Email Logs for `purchase_notification` |
 | Admin page shows blank | Not logged in as admin | Sign in as admin |
 | 401 errors on API calls | JWT expired or missing | Re-login to get fresh token |
 | 500 Internal Server Error | Backend crash | Check logs, restart server / redeploy |
@@ -285,6 +308,10 @@ The script:
 | Source Code | `c:\Woven Model\Development\Internal Tools\Woven Model ProductPurchaseSystem` |
 | Email Configuration | SMTP2GO dashboard: https://app.smtp2go.com |
 | Stripe Dashboard | https://dashboard.stripe.com |
+| Stripe Webhooks | https://dashboard.stripe.com/webhooks |
+| Stripe Status | https://status.stripe.com |
+| Store health check | `GET /api/health` on the production URL |
+| Store Stripe mode | `GET /api/checkout/config` |
 
 ---
 
@@ -310,4 +337,4 @@ The script:
 
 ---
 
-*© 2026 Woven Model. Last updated: August 14, 2026*
+*© 2026 Woven Model. Last updated: October 27, 2026*

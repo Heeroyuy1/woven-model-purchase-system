@@ -38,6 +38,12 @@ export const env = {
   get STRIPE_SECRET_KEY(): string {
     return loadEnv('STRIPE_SECRET_KEY', '');
   },
+  get STRIPE_PUBLISHABLE_KEY(): string {
+    return loadEnv('STRIPE_PUBLISHABLE_KEY', '');
+  },
+  get STRIPE_WEBHOOK_SECRET(): string {
+    return loadEnv('STRIPE_WEBHOOK_SECRET', '');
+  },
   get PAYPAL_CLIENT_ID(): string {
     return loadEnv('PAYPAL_CLIENT_ID', '');
   },
@@ -76,6 +82,10 @@ export const env = {
   },
   get BACKUP_EMAIL(): string {
     return loadEnv('BACKUP_EMAIL', 'ceo@wovenmodel.com');
+  },
+  /** Receives an internal "new sale" email whenever a purchase completes. */
+  get PURCHASE_NOTIFICATION_EMAIL(): string {
+    return loadEnv('PURCHASE_NOTIFICATION_EMAIL', 'ceo@wovenmodel.com');
   },
 };
 

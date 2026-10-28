@@ -38,20 +38,6 @@ app.use(cors({
   credentials: true,
 }));
 
-// Body parser
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true }));
-
-// Rate limiting
-const limiter = rateLimit({
-  windowMs: 60 * 1000,
-  max: 200,
-  message: { error: 'Too many requests, please try again later.' },
-  standardHeaders: true,
-  legacyHeaders: false,
-});
-app.use(limiter);
-
 // Health check - MUST be before route imports that could fail
 app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
@@ -69,7 +55,28 @@ import backupRoutes from './routes/backup';
 import portalRoutes from './routes/portal';
 import couponRoutes from './routes/coupons';
 import seedRoutes from './routes/seed';
+import webhookRoutes from './routes/webhooks';
 import { startScheduledBackups } from './services/backupService';
+import { startPendingOrderSweeper } from './services/orderService';
+import { assertPublishableKeyMatchesMode, getStripeMode } from './services/stripeClient';
+
+// Stripe webhooks must be mounted BEFORE the JSON body parser: signature
+// verification needs the raw, unparsed request body.
+app.use('/api/webhooks', webhookRoutes);
+
+// Body parser
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true }));
+
+// Rate limiting
+const limiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 200,
+  message: { error: 'Too many requests, please try again later.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+app.use(limiter);
 
 // Routes
 app.use('/api/auth', authRoutes);
@@ -95,6 +102,14 @@ app.get('*', (_req, res) => {
 // Error handler (must be last)
 app.use(errorHandler);
 
+// Fail fast when the Stripe keys come from different modes.
+try {
+  assertPublishableKeyMatchesMode();
+} catch (error: any) {
+  console.error(`[PurchaseSystem] Stripe configuration error: ${error.message}`);
+  process.exit(1);
+}
+
 // Start server with error logging
 try {
   app.listen(env.PORT, '0.0.0.0', () => {
@@ -102,7 +117,9 @@ try {
     console.log(`[PurchaseSystem] Licensing API: ${env.LICENSING_API_URL}`);
     console.log(`[PurchaseSystem] Frontend: ${env.FRONTEND_URL}`);
     console.log(`[PurchaseSystem] Environment: ${process.env.NODE_ENV || 'development'}`);
+    console.log(`[PurchaseSystem] Stripe mode: ${getStripeMode()}`);
     startScheduledBackups();
+    startPendingOrderSweeper();
   });
 } catch (err) {
   console.error('Failed to start server:', err);
