@@ -60,4 +60,16 @@ if (fs.existsSync(distAssetsDir)) {
   console.log(`[sync-public] copied ${fs.readdirSync(publicAssetsDir).length} asset file(s)`);
 }
 
+// Copy root-level static files from the Vite output (favicon.svg, robots.txt, ...).
+// These are NOT hashed and live in dist/ rather than dist/assets/.
+for (const entry of fs.readdirSync(distDir)) {
+  if (entry === 'index.html' || entry === 'assets') continue;
+
+  const source = path.join(distDir, entry);
+  if (!fs.statSync(source).isFile()) continue;
+
+  fs.copyFileSync(source, path.join(publicDir, entry));
+  console.log(`[sync-public] copied ${entry}`);
+}
+
 console.log('[sync-public] done');
